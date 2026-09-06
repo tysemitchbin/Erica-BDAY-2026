@@ -130,6 +130,42 @@
   .screen .acard .gain.go{animation:gain 1.6s ease-out forwards;}
   @keyframes gain{0%{opacity:0;transform:translateY(1vh);}20%{opacity:1;}100%{opacity:0;transform:translateY(-3vh);}}
 
+  /* ---- the little stage show (characters while people wait) ---- */
+  .showstage{position:relative;width:92vw;max-width:1400px;height:26vh;margin-top:2vh;pointer-events:none;}
+  .showstage .floor{position:absolute;left:0;right:0;bottom:2.5vh;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(163,92,255,.5),rgba(255,63,164,.5),transparent);}
+  .showstage .spot{position:absolute;bottom:1vh;width:15vh;height:4vh;border-radius:50%;transform:translateX(-50%);
+    background:radial-gradient(closest-side,rgba(255,255,255,.16),transparent);}
+  .showstage .char{position:absolute;bottom:2vh;height:23vh;width:auto;overflow:visible;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));}
+  .showstage .mage{left:6%;animation:sBob 2.6s ease-in-out infinite;}
+  .showstage .orc{left:42%;transform:translateX(-50%);animation:sBob 3.1s ease-in-out infinite;height:21vh;}
+  .showstage .idol{right:6%;animation:sStep .82s ease-in-out infinite alternate;}
+  .showstage .mage .orb{transform-origin:center;animation:sPulse 1.5s ease-in-out infinite;}
+  .showstage .mage .cast{animation:sCast 2.2s ease-out infinite;}
+  .showstage .idol .arm{transform-origin:64px 98px;animation:sWave .82s ease-in-out infinite alternate;}
+  .showstage .orc .axe{transform-origin:22px 108px;animation:sChop 1.7s ease-in-out infinite;}
+  .showstage .dragon{position:absolute;bottom:52%;left:0;width:15vh;height:auto;animation:sFly 16s linear infinite;
+    filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));}
+  .showstage .dragon .wing{transform-origin:56px 42px;animation:sFlap .24s ease-in-out infinite alternate;}
+  .showstage .note,.showstage .spark{position:absolute;opacity:0;font-weight:900;}
+  .showstage .note{color:var(--hot);font-size:3vh;text-shadow:0 0 12px var(--hot);animation:sRise 3.4s ease-in infinite;}
+  .showstage .spark{width:1.3vh;height:1.3vh;background:var(--gold);border-radius:2px;
+    box-shadow:0 0 10px var(--gold);animation:sRise 3s ease-in infinite;}
+  @keyframes sBob{50%{transform:translateY(-1.8vh) rotate(-2deg);}}
+  .showstage .orc{animation-name:sBobOrc;}
+  @keyframes sBobOrc{50%{transform:translateX(-50%) translateY(-1.4vh) rotate(2deg);}}
+  @keyframes sStep{0%{transform:translateX(-.6vw) rotate(-5deg);}100%{transform:translateX(.6vw) rotate(5deg);}}
+  @keyframes sWave{0%{transform:rotate(-20deg);}100%{transform:rotate(14deg);}}
+  @keyframes sChop{0%,55%{transform:rotate(-12deg);}72%{transform:rotate(34deg);}100%{transform:rotate(-12deg);}}
+  @keyframes sPulse{50%{transform:scale(1.3);filter:brightness(1.6);}}
+  @keyframes sCast{0%,70%{opacity:0;transform:translate(0,0) scale(.3);}80%{opacity:1;}100%{opacity:0;transform:translate(14px,-34px) scale(1.1);}}
+  @keyframes sFlap{0%{transform:rotate(-4deg);}100%{transform:rotate(-44deg);}}
+  @keyframes sFly{0%{transform:translateX(-18vh) translateY(0) scaleX(1);}
+    46%{transform:translateX(94vw) translateY(-4vh) scaleX(1);}54%{transform:translateX(94vw) translateY(-4vh) scaleX(-1);}
+    100%{transform:translateX(-18vh) translateY(2vh) scaleX(-1);}}
+  @keyframes sRise{0%{opacity:0;transform:translateY(0) rotate(0);}15%{opacity:1;}100%{opacity:0;transform:translateY(-14vh) rotate(160deg);}}
+
   .screen .pods{display:flex;gap:1.4vw;justify-content:center;align-items:flex-end;z-index:2;padding-top:2.4vh;}
   .pod{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:1.6vh 1.6vw;min-width:11vw;
     text-align:center;transition:transform .35s,border-color .35s,box-shadow .35s;position:relative;}
@@ -189,30 +225,30 @@
      "{F}" with the first guesser's name.
   ================================================================ */
   var PROMPTS = [
-    { cat: "Origin Story",  q: "{E}'s villain origin story: it all started when ___" },
-    { cat: "Memoir",        q: "The title of {E}'s autobiography would be ___" },
-    { cat: "Instagram", q: "The reel {E} sends the group chat with zero context and no caption: ___" },
-    { cat: "Game Design",   q: "One rule {E} would add to World of Warcraft: ___" },
-    { cat: "Text History",  q: "The single most {E} text message of all time: ___" },
-    { cat: "Famous Last Words", q: "{E}'s actual last words will probably be ___" },
-    { cat: "Roman Empire",  q: "The thing {E} thinks about constantly for no reason: ___" },
-    { cat: "Naming Things", q: "What {E} would name her guild, her band, or her firstborn: ___" },
-    { cat: "Buried With",   q: "The one item that absolutely must be buried with {E}: ___" },
-    { cat: "Spin It",       q: "{E}'s worst trait — but phrased as a strength on a résumé: ___" },
-    { cat: "New Holiday",   q: "A national holiday that should exist purely for {E}: ___" },
-    { cat: "Entrance Music", q: "{E}'s pro-wrestling entrance song, and why it fits: ___" },
-    { cat: "The Lie",       q: "The lie {E} tells more than any other: ___" },
-    { cat: "Collectible",   q: "If {E} were a limited-edition figurine, the accessory it comes with is ___" },
-    { cat: "2 A.M.",        q: "{E}'s search history at 2 a.m.: ___" },
-    { cat: "Nordic Noir",   q: "The plot of the Norwegian crime drama {E} is currently obsessed with: ___" },
-    { cat: "Leverage",      q: "{F}'s most reliable trick for getting {E} to leave the house: ___" },
-    { cat: "Backstage Rider", q: "One demand on {E}'s backstage rider before a metal show: ___" },
-    { cat: "The Usual",     q: "{E}'s sushi order, described as dramatically as possible: ___" },
+    { cat: "Origin Story",    q: "{E}'s villain origin story: it all started when ___" },
+    { cat: "Naming Things",   q: "What {E} would name her guild, her band, or her firstborn: ___" },
+    { cat: "The Lie",         q: "The lie {E} tells more than any other: ___" },
+    { cat: "Entrance Music",  q: "{E}'s pro-wrestling entrance song, and why it fits: ___" },
+    { cat: "Roman Empire",    q: "The thing {E} thinks about constantly for no reason: ___" },
+    { cat: "Buried With",     q: "The one item that absolutely must be buried with {E}: ___" },
+    { cat: "The Usual",       q: "{E}'s sushi order, described as dramatically as possible: ___" },
+    { cat: "Game Design",     q: "One rule {E} would add to World of Warcraft: ___" },
+    { cat: "Spirit Animal",   q: "{E}'s spirit animal, plus its one defining behaviour: ___" },
+    { cat: "Instagram",       q: "The reel {E} sends the group chat with zero context and no caption: ___" },
+    { cat: "Leverage",        q: "{F}'s most reliable trick for getting {E} to leave the house: ___" },
     { cat: "Forbidden Magic", q: "A spell {E} desperately wishes were real: ___" },
-    { cat: "Group Chat",    q: "The group chat would completely fall apart without {E} because ___" },
-    { cat: "Spirit Animal", q: "{E}'s spirit animal, plus its one defining behaviour: ___" },
-    { cat: "Sleep Schedule", q: "It's 4 a.m. and {E} is still very much awake. What is she doing? ___" },
-    { cat: "Perfect Friday", q: "How {E} would describe her perfect Friday night to a total stranger: ___" }
+    { cat: "Text History",    q: "The single most {E} text message of all time: ___" },
+    { cat: "New Holiday",     q: "A national holiday that should exist purely for {E}: ___" },
+    { cat: "Collectible",     q: "If {E} were a limited-edition figurine, the accessory it comes with is ___" },
+    { cat: "Nordic Noir",     q: "The plot of the Norwegian crime drama {E} is currently obsessed with: ___" },
+    { cat: "Memoir",          q: "The title of {E}'s autobiography would be ___" },
+    { cat: "Backstage Rider", q: "One demand on {E}'s backstage rider before a metal show: ___" },
+    { cat: "2 A.M.",          q: "{E}'s search history at 2 a.m.: ___" },
+    { cat: "Spin It",         q: "{E}'s worst trait — but phrased as a strength on a résumé: ___" },
+    { cat: "Sleep Schedule",  q: "It's 4 a.m. and {E} is still very much awake. What is she doing? ___" },
+    { cat: "Famous Last Words", q: "{E}'s actual last words will probably be ___" },
+    { cat: "Group Chat",      q: "The group chat would completely fall apart without {E} because ___" },
+    { cat: "Perfect Friday",  q: "How {E} would describe her perfect Friday night to a total stranger: ___" }
   ];
 
   var RANK_PTS = [3, 2, 1, 0];      // points for having Erica's #1 / #2 / #3 / #4 answer
@@ -542,7 +578,10 @@
         var g = names.map(function (s, i) { return (s || "").trim() || "Player " + (i + 1); });
         S = {
           players: g.concat([(judge || "").trim() || "Erica"]),   // index 3 = judge
-          order: shuffle(PROMPTS.map(function (_, i) { return i; })).slice(0, rounds),
+          order: (function () {
+            var idx = PROMPTS.map(function (_, i) { return i; });
+            return rounds >= PROMPTS.length ? idx : shuffle(idx).slice(0, rounds);  // "All" keeps the curated order
+          })(),
           round: 0, phase: "intro", typeStep: 0, data: null, scores: [0, 0, 0],
           applied: -1, finished: false
         };
@@ -863,6 +902,74 @@
     function onMessage(m) { if (m.t === "vm") { gotAnyVM = true; applyVM(m.vm); } }
     if (/dev/.test(location.hash)) window.__applyVM = function (vm) { applyVM(vm); };
 
+    /* ---- little stage show: SVG characters + CSS, no assets ---- */
+    var SVG_MAGE =
+      '<svg class="char mage" viewBox="0 0 120 172">' +
+      '<line x1="95" y1="44" x2="95" y2="164" stroke="#8a5a34" stroke-width="7" stroke-linecap="round"/>' +
+      '<circle class="orb" cx="95" cy="38" r="13" fill="#45e6d4"/>' +
+      '<path class="cast" d="M95 38 l3 -9 3 9 9 3 -9 3 -3 9 -3 -9 -9 -3z" fill="#ffe487"/>' +
+      '<path d="M26 164 Q33 96 60 92 Q87 96 94 164 Z" fill="#5b2ea6"/>' +
+      '<path d="M40 120 l-16 10 M80 120 l14 -8" stroke="#5b2ea6" stroke-width="9" stroke-linecap="round"/>' +
+      '<circle cx="60" cy="74" r="22" fill="#f2d3ba"/>' +
+      '<path d="M44 78 q16 22 32 0 q-4 26 -16 26 q-12 0 -16 -26z" fill="#e9e3f2"/>' +
+      '<path d="M30 68 L60 8 L90 68 Z" fill="#2e1550"/><circle cx="60" cy="9" r="5" fill="#ffcf3f"/>' +
+      '<path d="M30 68 q30 14 60 0" stroke="#ffcf3f" stroke-width="4" fill="none"/>' +
+      '<circle cx="52" cy="74" r="2.6" fill="#1a0b2e"/><circle cx="68" cy="74" r="2.6" fill="#1a0b2e"/>' +
+      '</svg>';
+    var SVG_IDOL =
+      '<svg class="char idol" viewBox="0 0 130 172">' +
+      '<rect x="54" y="128" width="8" height="30" rx="3" fill="#2a2440"/><rect x="70" y="128" width="8" height="30" rx="3" fill="#2a2440"/>' +
+      '<path d="M40 130 Q46 84 65 82 Q84 84 90 130 Z" fill="#ff4da6"/>' +
+      '<path d="M40 130 Q65 118 90 130 L90 138 Q65 126 40 138 Z" fill="#ff7bc0"/>' +
+      '<g class="arm"><line x1="66" y1="96" x2="98" y2="66" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
+      '<circle cx="101" cy="61" r="8" fill="#3a3350"/><rect x="98" y="61" width="4" height="16" fill="#6a6390"/></g>' +
+      '<line x1="60" y1="96" x2="40" y2="120" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
+      '<circle cx="65" cy="62" r="20" fill="#f2d3ba"/>' +
+      '<path d="M45 58 q-14 22 -6 46 q10 -4 12 -18z" fill="#4a2c3f"/>' +
+      '<path d="M85 58 q14 22 6 46 q-10 -4 -12 -18z" fill="#4a2c3f"/>' +
+      '<path d="M44 52 Q65 26 86 52 L86 44 Q65 22 44 44 Z" fill="#4a2c3f"/>' +
+      '<circle cx="58" cy="62" r="2.6" fill="#1a0b2e"/><circle cx="72" cy="62" r="2.6" fill="#1a0b2e"/>' +
+      '<path d="M60 70 q5 5 10 0" stroke="#c23b7a" stroke-width="2.4" fill="none" stroke-linecap="round"/>' +
+      '</svg>';
+    var SVG_ORC =
+      '<svg class="char orc" viewBox="0 0 130 168">' +
+      '<path d="M34 160 Q40 104 65 100 Q90 104 96 160 Z" fill="#3a3a52"/>' +
+      '<g class="axe"><line x1="30" y1="120" x2="14" y2="70" stroke="#7a4a2a" stroke-width="7" stroke-linecap="round"/>' +
+      '<path d="M4 70 q22 -16 26 4 q-16 12 -26 -4z" fill="#c9d1d9"/></g>' +
+      '<line x1="92" y1="112" x2="104" y2="128" stroke="#3f8f4f" stroke-width="10" stroke-linecap="round"/>' +
+      '<circle cx="65" cy="70" r="26" fill="#3f8f4f"/>' +
+      '<path d="M52 84 l-4 12 6 -3z M78 84 l4 12 -6 -3z" fill="#f2f2f2"/>' +
+      '<path d="M40 58 q10 -8 18 0 M72 58 q10 -8 18 0" stroke="#1c3a22" stroke-width="3" fill="none"/>' +
+      '<circle cx="55" cy="66" r="3" fill="#ffcf3f"/><circle cx="77" cy="66" r="3" fill="#ffcf3f"/>' +
+      '<path d="M42 40 q23 -14 46 0" stroke="#2b2b1e" stroke-width="6" fill="none"/>' +
+      '</svg>';
+    var SVG_DRAGON =
+      '<svg class="dragon" viewBox="0 0 150 96">' +
+      '<path d="M40 52 Q8 44 2 62 Q18 58 38 60 Z" fill="#2fd39a"/>' +
+      '<ellipse cx="72" cy="52" rx="34" ry="17" fill="#39f2ac"/>' +
+      '<path class="wing" d="M62 42 Q52 4 26 16 Q42 34 54 50 Z" fill="#8affd8"/>' +
+      '<circle cx="108" cy="42" r="15" fill="#39f2ac"/>' +
+      '<path d="M100 30 l-3 -10 6 6z M114 30 l3 -10 -6 6z" fill="#2fd39a"/>' +
+      '<circle cx="113" cy="40" r="2.6" fill="#06231f"/>' +
+      '<path d="M120 48 q8 2 12 -2" stroke="#06231f" stroke-width="2" fill="none"/>' +
+      '</svg>';
+
+    function showStage() {
+      var s = el("div", { class: "showstage" });
+      var html = '<div class="floor"></div>'
+        + '<div class="spot" style="left:12%"></div><div class="spot" style="left:42%"></div><div class="spot" style="left:88%"></div>'
+        + SVG_MAGE + SVG_ORC + SVG_IDOL + SVG_DRAGON;
+      var deco = [
+        ['note', '8%', '♪', 0], ['note', '88%', '♫', 1.6], ['note', '82%', '♪', 3.1], ['note', '4%', '♫', 2.2],
+        ['spark', '16%', '', 0.8], ['spark', '10%', '', 2.4], ['spark', '92%', '', 1.2], ['spark', '40%', '', 1.8]
+      ];
+      deco.forEach(function (d) {
+        html += '<span class="' + d[0] + '" style="left:' + d[1] + ';bottom:4vh;animation-delay:' + d[3] + 's">' + d[2] + '</span>';
+      });
+      s.innerHTML = html;
+      return s;
+    }
+
     function pods(vm, opts) {
       opts = opts || {};
       var row = el("div", { class: "pods" });
@@ -938,12 +1045,13 @@
           : (vm.active === 3 ? vm.names.judge : vm.names.guessers[vm.active]) + " is typing…";
         if (changed && n > 0) SFX.lock();
         frame([
-          el("div", { class: "body" }, [
+          el("div", { class: "body", style: "flex:none;justify-content:flex-start;padding-top:6vh" }, [
             el("div", { class: "cat fade", text: vm.cat }),
-            el("div", { class: "q fade", text: vm.q }),
-            el("div", { class: "roundword fade", style: "margin-top:2vh;font-size:2vw;color:var(--cyan)", text: who }),
-            el("div", { class: "roundword fade", style: "margin-top:1vh;font-size:1.5vw", text: n + " / 4 locked in" })
+            el("div", { class: "q fade", style: "font-size:2.5vw;margin-bottom:1.4vh", text: vm.q }),
+            el("div", { class: "roundword fade", style: "font-size:1.9vw;color:var(--cyan)", text: who }),
+            el("div", { class: "roundword fade", style: "margin-top:.6vh;font-size:1.4vw", text: n + " / 4 locked in" })
           ]),
+          el("div", { style: "flex:1;position:relative;width:100%;display:flex;align-items:flex-end;justify-content:center;z-index:2;" }, [showStage()]),
           pods(vm, { active: vm.active, locked: vm.locked })
         ]);
         return;
