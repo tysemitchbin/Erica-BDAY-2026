@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#160726" />
+<title>Erica's Birthday Quiz</title>
+<style>
+  :root {
+    --bg1:#1c0b33; --bg2:#0a0416; --card:#271246; --card-hi:#3a1c66;
+    --line:#4d2c85; --text:#f4ecff; --muted:#b79ada;
+    --gold:#ffcf3f; --magenta:#ff3fa4; --cyan:#45e6d4; --green:#61e690; --violet:#b98bff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(130% 90% at 50% 0%, var(--bg1) 0%, var(--bg2) 72%);
+    color:var(--text); line-height:1.45; overflow-x:hidden;
+  }
+  #app{min-height:100%;}
+  h1,h2,h3{margin:0 0 12px;line-height:1.15;}
+  p{margin:0 0 14px;}
+  .muted{color:var(--muted);}
+  .center{text-align:center;}
+
+  /* ============ CONTROLLER (phone) ============ */
+  .ctrl{max-width:480px;margin:0 auto;padding:20px 18px 44px;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;}
+  .ctrl h1{font-size:1.6rem;letter-spacing:-.4px;}
+  .ctrl h2{font-size:1.25rem;}
+  .tag{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;
+    padding:5px 12px;border-radius:999px;background:rgba(255,63,164,.16);color:var(--magenta);border:1px solid rgba(255,63,164,.4);}
+  .btn{display:block;width:100%;border:none;border-radius:14px;padding:17px 18px;font-size:1.06rem;font-weight:800;
+    font-family:inherit;color:#1a0b2e;background:linear-gradient(135deg,var(--gold),#ffe487);cursor:pointer;margin-top:12px;
+    box-shadow:0 6px 20px rgba(255,207,63,.25);}
+  .btn:active{transform:translateY(1px);}
+  .btn.secondary{background:transparent;color:var(--text);border:1.5px solid var(--line);box-shadow:none;}
+  .btn.ghost{background:var(--card);color:var(--muted);box-shadow:none;font-weight:700;font-size:.92rem;padding:12px;}
+  .btn:disabled{opacity:.38;cursor:default;}
+  .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);
+    background:var(--card);color:var(--text);border-radius:14px;padding:15px 16px;font-size:1.01rem;font-family:inherit;
+    font-weight:500;cursor:pointer;margin-bottom:11px;line-height:1.35;}
+  .opt:active{transform:translateY(1px);}
+  .opt.selected{border-color:var(--gold);background:var(--card-hi);box-shadow:0 0 0 2px rgba(255,207,63,.4) inset;}
+  .opt .badge{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;
+    background:rgba(255,255,255,.07);color:var(--muted);}
+  .opt.selected .badge{background:var(--gold);color:#1a0b2e;}
+  .opt .rankmark{flex:none;font-size:1.35rem;width:32px;text-align:center;}
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px;}
+  .question{font-size:1.2rem;font-weight:800;margin:14px 0 20px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);
+    margin-bottom:6px;font-weight:800;}
+  .field input{width:100%;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);
+    color:var(--text);font-size:1.05rem;font-family:inherit;}
+  .field input:focus{outline:2px solid var(--gold);border-color:var(--gold);}
+  .pill-row{display:flex;gap:8px;}
+  .pill-row button{flex:1;padding:12px 0;border-radius:12px;border:1.5px solid var(--line);background:var(--card);
+    color:var(--text);font-weight:800;font-family:inherit;font-size:1rem;cursor:pointer;}
+  .pill-row button.active{background:var(--gold);color:#1a0b2e;border-color:var(--gold);}
+  .grow{flex:1;}
+  .handoff{text-align:center;padding:26px 0;}
+  .handoff .emoji{font-size:3.6rem;margin-bottom:6px;}
+  .handoff .big{font-size:2rem;font-weight:900;margin:8px 0 2px;color:var(--gold);}
+  .progress{font-size:.8rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:800;margin-bottom:6px;}
+  .scoreline{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:12px;
+    background:var(--card);border:1.5px solid var(--line);margin-bottom:9px;font-weight:700;}
+  .scoreline .pts{font-weight:900;color:var(--gold);font-size:1.1rem;}
+  .scoreline.leader{border-color:var(--gold);background:var(--card-hi);}
+  .reveal-opt{padding:13px 15px;border-radius:12px;border:1.5px solid var(--line);margin-bottom:10px;background:var(--card);}
+  .reveal-opt.erica{border-color:var(--magenta);box-shadow:0 0 0 2px rgba(255,63,164,.3) inset;}
+  .reveal-opt .top{display:flex;justify-content:space-between;gap:10px;font-weight:600;}
+  .reveal-opt .who{font-size:.84rem;color:var(--cyan);margin-top:6px;font-weight:800;}
+  .brk{font-size:.88rem;color:var(--muted);margin-top:4px;}
+  .footer-note{font-size:.78rem;color:var(--muted);text-align:center;margin-top:20px;}
+  details{margin-top:14px;} summary{cursor:pointer;color:var(--muted);font-weight:800;font-size:.9rem;}
+  details p{font-size:.9rem;color:var(--muted);margin-top:10px;}
+  .status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:middle;}
+  .status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+  .qrbox{background:#fff;border-radius:16px;padding:16px;max-width:340px;margin:14px auto;}
+  .qrbox svg{display:block;width:100%;height:auto;}
+  .pairbtn{display:block;width:100%;max-width:340px;margin:10px auto 0;border:1.5px solid var(--line);
+    background:var(--card);color:var(--text);border-radius:12px;padding:13px 16px;font-weight:800;font-size:1rem;
+    font-family:inherit;cursor:pointer;}
+  .pairbtn.go{background:linear-gradient(135deg,var(--gold),#ffe487);color:#1a0b2e;border:none;}
+  .step{font-size:.8rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin:4px 0 2px;}
+  video.scan{width:100%;max-width:340px;border-radius:16px;margin:12px auto;display:block;background:#000;border:2px solid var(--line);}
+  textarea.code{width:100%;min-height:90px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg2);
+    color:var(--text);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;padding:10px;}
+
+  /* ============ BIG SCREEN ============ */
+  .screen{position:fixed;inset:0;overflow:hidden;background:
+    radial-gradient(60% 50% at 20% 0%, rgba(255,63,164,.18), transparent 60%),
+    radial-gradient(60% 50% at 85% 10%, rgba(69,230,212,.15), transparent 60%),
+    radial-gradient(130% 90% at 50% 0%, var(--bg1) 0%, var(--bg2) 75%);}
+  .screen .stage{position:absolute;inset:0;display:flex;flex-direction:column;padding:3.5vh 4vw 3vh;}
+  .blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.28;animation:drift 18s ease-in-out infinite;}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(4vw,3vh) scale(1.15);}}
+  .screen .hdr{display:flex;justify-content:space-between;align-items:center;font-weight:900;letter-spacing:2px;
+    text-transform:uppercase;font-size:1.5vw;color:var(--muted);z-index:2;}
+  .screen .hdr .live{color:var(--green);}
+  .screen .body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:2;min-height:0;overflow:hidden;padding-bottom:1vh;}
+  .screen .cat{font-size:1.5vw;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:var(--magenta);margin-bottom:1.2vh;}
+  .screen .q{font-size:2.9vw;font-weight:900;max-width:82vw;line-height:1.15;margin-bottom:2.4vh;text-wrap:balance;}
+  .screen .opts{display:grid;grid-template-columns:1fr 1fr;gap:1.4vh 2vw;width:80vw;max-width:1200px;}
+  .screen .ocard{display:flex;align-items:center;gap:1.2vw;background:var(--card);border:2px solid var(--line);
+    border-radius:16px;padding:1.7vh 1.6vw;font-size:1.7vw;font-weight:700;text-align:left;line-height:1.22;min-width:0;
+    transition:transform .4s,border-color .4s,background .4s,box-shadow .4s;}
+  .screen .ocard>div:nth-child(2){flex:1;min-width:0;}
+  .screen .ocard .let{flex:none;width:3.2vw;height:3.2vw;min-width:34px;min-height:34px;border-radius:50%;
+    display:grid;place-items:center;font-weight:900;background:rgba(255,255,255,.08);color:var(--muted);font-size:1.6vw;}
+  .screen .ocard .medal{flex:none;margin-left:.6vw;font-size:2.4vw;opacity:0;transform:scale(0);transition:opacity .4s,transform .4s;}
+  .screen .ocard.ranked{border-color:var(--gold);background:var(--card-hi);}
+  .screen .ocard.ranked .medal{opacity:1;transform:scale(1);}
+  .screen .ocard.erica{box-shadow:0 0 0 3px var(--magenta) inset,0 0 40px rgba(255,63,164,.4);}
+  .screen .ocard .pickchips{flex:none;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:9vw;}
+  .chip{font-size:1.05vw;font-weight:900;padding:.4vh .8vw;border-radius:999px;background:var(--cyan);color:#06231f;white-space:nowrap;}
+
+  .screen .pods{display:flex;gap:1.4vw;justify-content:center;align-items:flex-end;z-index:2;padding-top:2vh;}
+  .pod{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:1.6vh 1.6vw;min-width:11vw;
+    text-align:center;transition:transform .35s,border-color .35s,box-shadow .35s;position:relative;}
+  .pod .av{font-size:2.6vw;}
+  .pod .nm{font-weight:900;font-size:1.5vw;margin-top:.3vh;letter-spacing:.5px;}
+  .pod .sc{font-weight:900;font-size:2.2vw;color:var(--gold);}
+  .pod.active{border-color:var(--cyan);transform:translateY(-1.4vh) scale(1.04);box-shadow:0 0 34px rgba(69,230,212,.45);}
+  .pod.locked{border-color:var(--green);}
+  .pod.judge{border-color:var(--magenta);}
+  .pod .stamp{position:absolute;top:-1.2vh;right:-1vw;background:var(--green);color:#06210f;font-weight:900;
+    font-size:1vw;padding:.4vh .9vw;border-radius:999px;transform:rotate(8deg) scale(0);transition:transform .3s;}
+  .pod.locked .stamp{transform:rotate(8deg) scale(1);}
+  .pod .plus{position:absolute;top:-3vh;left:50%;transform:translateX(-50%);font-weight:900;font-size:2.4vw;
+    color:var(--green);opacity:0;}
+  .pod .plus.go{animation:plup 1.4s ease-out forwards;}
+  @keyframes plup{0%{opacity:0;transform:translate(-50%,1vh);}20%{opacity:1;}100%{opacity:0;transform:translate(-50%,-4vh);}}
+
+  .screen .huge{font-size:9vw;font-weight:900;letter-spacing:-.5px;}
+  .screen .roundword{font-size:2.4vw;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:var(--muted);}
+  .pop{animation:pop .5s cubic-bezier(.2,1.4,.4,1) both;}
+  @keyframes pop{from{transform:scale(.6);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .fade{animation:fade .5s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(1.5vh);}to{opacity:1;transform:none;}}
+  .pair-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;z-index:2;position:relative;text-align:center;}
+  .pair-wrap .qrbox{max-width:min(56vh,480px);}
+  .pair-wrap .pairbtn{max-width:min(56vh,480px);font-size:1.3vw;padding:1.4vh 1vw;}
+  .pair-wrap .step{font-size:1.1vw;}
+  .pair-wrap h1{font-size:4vw;}
+  .pair-wrap p{font-size:1.7vw;color:var(--muted);max-width:60vw;}
+  .bigscoreboard{width:70vw;max-width:1000px;}
+  .bar{display:flex;align-items:center;gap:1.5vw;margin-bottom:1.8vh;font-weight:900;}
+  .bar .lbl{width:12vw;text-align:right;font-size:1.7vw;}
+  .bar .track{flex:1;height:3.4vh;background:var(--card);border-radius:999px;overflow:hidden;border:2px solid var(--line);}
+  .bar .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--magenta),var(--gold));
+    width:0;transition:width 1.1s cubic-bezier(.2,.8,.2,1);}
+  .bar .val{width:5vw;font-size:2vw;color:var(--gold);}
+  .crown{font-size:8vw;}
+  .happy{font-size:3.6vw;font-weight:900;background:linear-gradient(90deg,var(--gold),var(--magenta),var(--cyan));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  .confetti{position:fixed;top:-14px;width:12px;height:16px;z-index:99;pointer-events:none;border-radius:2px;}
+  @keyframes fall{to{transform:translateY(112vh) rotate(720deg);}}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--card);border:1.5px solid var(--line);
+    color:var(--text);padding:10px 16px;border-radius:12px;font-weight:700;font-size:.9rem;z-index:120;}
+  .mutebtn{position:fixed;top:12px;right:14px;z-index:120;background:rgba(0,0,0,.35);border:1px solid var(--line);
+    color:var(--text);border-radius:10px;padding:8px 12px;font-weight:800;cursor:pointer;font-size:1.1rem;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="vendor/qrcode.min.js"></script>
+<script src="vendor/jsQR.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ================================================================
+     QUESTIONS  —  edit / add freely. Each needs exactly 4 options.
+  ================================================================ */
+  var QUESTIONS = [
+    { cat:"Raid Night", q:"It's raid night AND a friend dinner. What does Erica actually do?", options:[
+      "\"Dinner? There's a world boss up.\"",
+      "Shows up, phone out, \"just checking the auction house\"",
+      "Cancels dinner, invents a mild illness",
+      "Brings the laptop to the restaurant, unironically" ]},
+    { cat:"World of Warcraft", q:"Which WoW role is peak Erica energy?", options:[
+      "Healer who sighs loudly before every pull",
+      "Mage majestically standing in the fire",
+      "Hunter letting the pet handle her emotions",
+      "Tank who pulls before anyone is ready" ]},
+    { cat:"Sleep Token", q:"Sleep Token comes on. Erica immediately:", options:[
+      "Full theatrical lip-sync, eyes closed, hand out",
+      "\"This is basically a religion, actually\"",
+      "Aggressively mediocre air drums",
+      "Texts the group chat lyrics with zero context" ]},
+    { cat:"Bring Me The Horizon", q:"Erica's most-played BMTH era:", options:[
+      "Sempiternal — the peak emo years",
+      "That's the Spirit",
+      "amo / POST HUMAN",
+      "The screamy 2006 stuff she pretends she's over" ]},
+    { cat:"2010s KPOP", q:"Erica's 2010s KPOP bias group:", options:[
+      "Girls' Generation","BIGBANG","EXO","2NE1" ]},
+    { cat:"Norway", q:"Erica's Norwegian fixation this month:", options:[
+      "A crime drama with subtitles, watched at 2am",
+      "AURORA (the singer, obviously)",
+      "New Norwegian slang dropped in the group chat",
+      "Explaining \"koselig\" to you for the 40th time" ]},
+    { cat:"Sushi", q:"Erica orders sushi. Assess the damage:", options:[
+      "\"Just a couple rolls\" somehow equals six",
+      "The exact same three things, every single time",
+      "Chef's choice — then quiet panic",
+      "Whatever has the most cream cheese in it" ]},
+    { cat:"Sushi", q:"Erica's soy sauce technique:", options:[
+      "Drowns it. It is soup now.",
+      "One elegant dip, silently judges yours",
+      "Mixes wasabi in like a lab technician",
+      "\"I don't need sauce, the fish should speak\"" ]},
+    { cat:"Indoor Kid", q:"The perfect Saturday for Erica:", options:[
+      "Curtains shut, dungeon grind, eleven hours",
+      "Exactly one (1) errand, then full recovery",
+      "Blanket, a show, snacks, phone on Do Not Disturb",
+      "Sushi delivery and a fantasy novel" ]},
+    { cat:"Fantasy", q:"If Erica were a fantasy race:", options:[
+      "Elf — superior, and aware of it",
+      "Dwarf — grumpy, loyal, always has an ale",
+      "Tiefling — pure chaos, excellent eyeliner",
+      "Half-orc — will end you, then apologize" ]},
+    { cat:"Fantasy", q:"Guaranteed to make Erica cry during a fantasy show:", options:[
+      "A dragon dies",
+      "The found-family group hug moment",
+      "A genuinely good character arc ending",
+      "Honestly? Also the dragon thing again" ]},
+    { cat:"Birthday", q:"The best birthday gift for Erica:", options:[
+      "WoW game time plus a \"leave me alone\" coupon",
+      "Concert tickets — metal, non-negotiable",
+      "An objectively absurd amount of sushi",
+      "A weighted blanket and total silence" ]},
+    { cat:"Friend Group", q:"Erica's true role in the friend group:", options:[
+      "Plans nothing, rates everything out of 10",
+      "The mom friend with snacks and strong opinions",
+      "The chaos gremlin",
+      "The therapist who badly needs a therapist" ]},
+    { cat:"Karaoke", q:"Erica's karaoke song:", options:[
+      "A 2010s KPOP banger — full choreo, no notes",
+      "\"Can You Feel My Heart\" by BMTH",
+      "Something Norwegian nobody else can follow",
+      "Refuses to sing, films everyone else" ]},
+    { cat:"Toxic Trait", q:"Erica's most defensible toxic trait:", options:[
+      "Starts a series without you, then denies it",
+      "\"I'm five minutes away\" (she is not)",
+      "Leaves you on read, then a three-day paragraph",
+      "Won't pick the restaurant but will veto yours" ]},
+    { cat:"Catchphrase", q:"Erica's most-used phrase:", options:[
+      "\"One more pull.\"",
+      "\"I'm so tired\" (has slept ten hours)",
+      "\"Okay this is super niche but—\"",
+      "\"We should hang out\" (texted from her couch)" ]},
+    { cat:"Villain Origin", q:"Erica's villain origin story:", options:[
+      "Server maintenance on raid night",
+      "Someone spoiled the finale for her",
+      "The sushi place discontinued her roll",
+      "Ethan touched her dice / keyboard / snacks" ]},
+    { cat:"Travel", q:"Erica's dream trip she will never actually book:", options:[
+      "Norway — fjords, a cabin, zero people",
+      "Japan, purely and openly for the food",
+      "A metal festival in a muddy field somewhere",
+      "Nowhere. The bed is the destination." ]},
+    { cat:"The Bag", q:"Always somewhere in Erica's bag:", options:[
+      "Headphones the size of a dinner plate",
+      "A charger (she, personally, is at 3%)",
+      "Emergency snacks for a non-existent emergency",
+      "A book she will absolutely not read on this trip" ]},
+    { cat:"The Wedding", q:"A song that will somehow play at Erica & Ethan's wedding:", options:[
+      "Sleep Token — tastefully, against all odds",
+      "Their secret embarrassing 2010s KPOP song",
+      "Something soft, Norwegian, and a little sad",
+      "A WoW zone theme (Ethan's idea, she allowed it)" ]},
+    { cat:"Screen Time", q:"Erica's genuine number-one screen time app:", options:[
+      "The game launcher, if we're being technical",
+      "YouTube video essays at 1.5x speed",
+      "This exact group chat",
+      "A wiki. It is always a wiki." ]},
+    { cat:"Pet Peeve", q:"The fastest way to annoy Erica:", options:[
+      "Stand in the fire / pull aggro off her",
+      "\"Is this that emo screamo stuff?\"",
+      "Mispronounce the Norwegian word on purpose",
+      "Take a bite of her roll without asking" ]}
+  ];
+
+  var RANK_PTS = [3, 2, 1];
+  var MATCH_BONUS = 2;
+  var MEDALS = ["🥇", "🥈", "🥉"];
+  var AV_GUESS = ["⚔️", "✨", "🍣"];
+  var AV_JUDGE = "🐉";
+  var SAVE_KEY = "erica-bday-quiz-v2";
+
+  var app = document.getElementById("app");
+
+  /* ============================ helpers ============================ */
+  function el(tag, props, kids) {
+    var n = document.createElement(tag);
+    if (props) Object.keys(props).forEach(function (k) {
+      if (k === "class") n.className = props[k];
+      else if (k === "html") n.innerHTML = props[k];
+      else if (k === "text") n.textContent = props[k];
+      else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), props[k]);
+      else if (props[k] != null) n.setAttribute(k, props[k]);
+    });
+    (kids || []).forEach(function (c) {
+      if (c == null) return;
+      n.appendChild(typeof c === "string" ? document.createTextNode(c) : c);
+    });
+    return n;
+  }
+  function render(nodes) {
+    app.innerHTML = "";
+    (Array.isArray(nodes) ? nodes : [nodes]).forEach(function (n) { app.appendChild(n); });
+    window.scrollTo(0, 0);
+  }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function letter(i) { return String.fromCharCode(65 + i); }
+
+  function toast(msg) {
+    var t = el("div", { class: "toast", text: msg });
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+  }
+
+  function confetti(n) {
+    var colors = ["#ffcf3f", "#ff3fa4", "#45e6d4", "#61e690", "#b98bff"];
+    for (var i = 0; i < (n || 90); i++) {
+      (function (i) {
+        var c = el("div", { class: "confetti" });
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.background = colors[i % colors.length];
+        c.style.animation = "fall " + (2.4 + Math.random() * 2.4) + "s linear " + (Math.random() * 1.4) + "s forwards";
+        document.body.appendChild(c);
+        setTimeout(function () { c.remove(); }, 9000);
+      })(i);
+    }
+  }
+
+  /* ============================ sound ============================ */
+  var actx = null, muted = false;
+  function sfxInit() {
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {}
+  }
+  function tone(freq, dur, type, vol, when) {
+    if (muted || !actx) return;
+    var t0 = actx.currentTime + (when || 0);
+    var o = actx.createOscillator(), g = actx.createGain();
+    o.type = type || "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(actx.destination);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  var SFX = {
+    lock:  function () { tone(660, 0.12, "square", 0.15); tone(990, 0.12, "square", 0.12, 0.06); },
+    turn:  function () { tone(520, 0.1, "triangle", 0.12); },
+    reveal:function () { tone(300, 0.2, "sawtooth", 0.1); tone(450, 0.2, "sawtooth", 0.1, 0.1); },
+    points:function () { tone(880, 0.08, "square", 0.12); tone(1175, 0.1, "square", 0.12, 0.08); },
+    round: function () { [523, 659, 784, 1046].forEach(function (f, i) { tone(f, 0.16, "triangle", 0.14, i * 0.09); }); },
+    win:   function () { [523, 659, 784, 1046, 1318, 1568].forEach(function (f, i) { tone(f, 0.3, "triangle", 0.16, i * 0.12); }); }
+  };
+
+  /* ==================== compression / signaling ==================== */
+  function b64enc(bytes) {
+    var s = "";
+    for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+    return btoa(s);
+  }
+  function b64dec(str) {
+    var s = atob(str), a = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) a[i] = s.charCodeAt(i);
+    return a;
+  }
+  async function pack(obj) {
+    var json = JSON.stringify(obj);
+    if (typeof CompressionStream === "function") {
+      try {
+        var cs = new CompressionStream("gzip");
+        var stream = new Blob([json]).stream().pipeThrough(cs);
+        var buf = await new Response(stream).arrayBuffer();
+        return "g" + b64enc(new Uint8Array(buf));
+      } catch (e) {}
+    }
+    return "r" + btoa(unescape(encodeURIComponent(json)));
+  }
+  async function unpack(str) {
+    str = str.trim();
+    var tag = str[0], body = str.slice(1);
+    if (tag === "g") {
+      var ds = new DecompressionStream("gzip");
+      var stream = new Blob([b64dec(body)]).stream().pipeThrough(ds);
+      var text = await new Response(stream).text();
+      return JSON.parse(text);
+    }
+    return JSON.parse(decodeURIComponent(escape(atob(body))));
+  }
+
+  var RTC_CFG = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+
+  function iceComplete(pc) {
+    return new Promise(function (resolve) {
+      if (pc.iceGatheringState === "complete") return resolve();
+      var done = false;
+      function finish() { if (done) return; done = true; pc.removeEventListener("icegatheringstatechange", check); resolve(); }
+      function check() { if (pc.iceGatheringState === "complete") finish(); }
+      pc.addEventListener("icegatheringstatechange", check);
+      setTimeout(finish, 2800);
+    });
+  }
+
+  /* ============================== QR ============================== */
+  function makeQR(text) {
+    var qr = qrcode(0, "L");
+    qr.addData(text);
+    qr.make();
+    var box = el("div", { class: "qrbox" });
+    box.innerHTML = qr.createSvgTag({ cellSize: 3, margin: 2, scalable: true });
+    return box;
+  }
+
+  function scanner(onResult, onFail) {
+    var video = el("video", { class: "scan", autoplay: "", playsinline: "", muted: "" });
+    var canvas = document.createElement("canvas");
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
+    var stream = null, raf = null, stopped = false;
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(function (s) {
+        stream = s; video.srcObject = s;
+        video.play().catch(function () {});
+        raf = requestAnimationFrame(tick);
+      })
+      .catch(function (err) { if (onFail) onFail(err); });
+    function tick() {
+      if (stopped) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth) {
+        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        try {
+          var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var code = jsQR(img.data, img.width, img.height, { inversionAttempts: "dontInvert" });
+          if (code && code.data) { stop(); onResult(code.data); return; }
+        } catch (e) {}
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    function stop() {
+      stopped = true;
+      if (raf) cancelAnimationFrame(raf);
+      if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+    }
+    return { video: video, stop: stop };
+  }
+
+  /* ============================================================
+     ROLE ROUTER
+  ============================================================ */
+  function boot() {
+    var q = location.search;
+    if (/screen/.test(q)) return Screen.start();
+    if (/play/.test(q)) return Controller.start();
+    landing();
+  }
+
+  function landing() {
+    document.body.dataset.role = "ctrl";
+    render(el("div", { class: "ctrl" }, [
+      el("h1", { class: "center", html: "🎂 Erica's Birthday Quiz" }),
+      el("p", { class: "center muted", text: "How well do you know the birthday dragon? Guess how Erica thinks — she ranks the answers." }),
+      el("div", { class: "card" }, [
+        el("h2", { text: "Set this device up as…" }),
+        el("button", { class: "btn", onclick: function () { sfxInit(); Screen.start(); } }, ["📺  The Big Screen"]),
+        el("p", { class: "muted", style: "margin:8px 0 0;font-size:.86rem", text: "The laptop / TV everyone watches. Open this first." }),
+        el("button", { class: "btn secondary", onclick: function () { sfxInit(); Controller.start(); } }, ["📱  The Controller"]),
+        el("p", { class: "muted", style: "margin:8px 0 0;font-size:.86rem", text: "The phone you tap on and pass around. Pairs to the Big Screen — or just play on this phone alone." })
+      ]),
+      el("details", {}, [
+        el("summary", { text: "How scoring works" }),
+        el("p", { html: "Each round everyone (Erica too) secretly picks an answer. Then Erica ranks her <b>top 3</b>.<br><br>You score <b>3 / 2 / 1</b> if your pick is Erica's #1 / #2 / #3, plus <b>+2</b> if you picked the exact answer Erica chose for herself. Most points after all rounds wins." })
+      ]),
+      el("p", { class: "footer-note", text: "Best friends only · Ethan · Ellie · Mitch · Erica" })
+    ]));
+  }
+
+  /* ============================================================
+     PEER LINK  (shared by both roles)
+  ============================================================ */
+  function PeerLink() {
+    this.pc = null; this.ch = null;
+    this.onopen = null; this.onmessage = null; this.onclose = null;
+  }
+  if (/dev/.test(location.hash)) { window.PeerLink = PeerLink; window.__pack = pack; window.__unpack = unpack; }
+  PeerLink.prototype._wire = function (ch) {
+    var self = this;
+    this.ch = ch;
+    ch.onopen = function () { if (self.onopen) self.onopen(); };
+    ch.onclose = function () { if (self.onclose) self.onclose(); };
+    ch.onmessage = function (e) {
+      if (!self.onmessage) return;
+      try { self.onmessage(JSON.parse(e.data)); } catch (x) {}
+    };
+  };
+  PeerLink.prototype.send = function (obj) {
+    if (this.ch && this.ch.readyState === "open") {
+      try { this.ch.send(JSON.stringify(obj)); } catch (e) {}
+    }
+  };
+  // Big Screen = offerer
+  PeerLink.prototype.createOffer = async function () {
+    var self = this;
+    this.pc = new RTCPeerConnection(RTC_CFG);
+    this._wire(this.pc.createDataChannel("game", { ordered: true }));
+    this.pc.oniceconnectionstatechange = function () {
+      var s = self.pc.iceConnectionState;
+      if ((s === "failed" || s === "disconnected") && self.onclose) self.onclose();
+    };
+    var offer = await this.pc.createOffer();
+    await this.pc.setLocalDescription(offer);
+    await iceComplete(this.pc);
+    return pack(this.pc.localDescription);
+  };
+  PeerLink.prototype.acceptAnswer = async function (code) {
+    var desc = await unpack(code);
+    await this.pc.setRemoteDescription(desc);
+  };
+  // Controller = answerer
+  PeerLink.prototype.acceptOffer = async function (code) {
+    var self = this;
+    this.pc = new RTCPeerConnection(RTC_CFG);
+    this.pc.ondatachannel = function (e) { self._wire(e.channel); };
+    this.pc.oniceconnectionstatechange = function () {
+      var s = self.pc.iceConnectionState;
+      if ((s === "failed" || s === "disconnected") && self.onclose) self.onclose();
+    };
+    var offer = await unpack(code);
+    await this.pc.setRemoteDescription(offer);
+    var answer = await this.pc.createAnswer();
+    await this.pc.setLocalDescription(answer);
+    await iceComplete(this.pc);
+    return pack(this.pc.localDescription);
+  };
+
+  /* ============================================================
+     CONTROLLER  (phone) — owns the game
+  ============================================================ */
+  var Controller = (function () {
+    var link = new PeerLink();
+    var connected = false;
+    var S = null;   // game state
+
+    function start() {
+      document.body.dataset.role = "ctrl";
+      muted = true;                       // phone stays quiet; screen makes the noise
+      var saved = loadState();
+      if (saved && !saved.finished) return resumePrompt(saved);
+      pairScreen();
+    }
+
+    function loadState() { try { return JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { return null; } }
+    function saveState() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {} }
+    function clearState() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
+
+    function resumePrompt(saved) {
+      render(el("div", { class: "ctrl" }, [
+        el("h1", { class: "center", text: "Game in progress" }),
+        el("p", { class: "center muted", text: "Round " + (saved.round + 1) + " of " + saved.order.length + "." }),
+        el("div", { class: "card" }, [
+          el("button", { class: "btn", onclick: function () { S = saved; pairScreen(true); } }, ["Resume"]),
+          el("button", { class: "btn secondary", onclick: function () { clearState(); pairScreen(); } }, ["Start a new game"])
+        ])
+      ]));
+    }
+
+    /* ---------- pairing ---------- */
+    function pairScreen(afterResume) {
+      var wrap = el("div", { class: "ctrl" });
+      wrap.appendChild(el("h1", { class: "center", text: "Connect to the Big Screen" }));
+      wrap.appendChild(el("p", { class: "center muted", text: "On the laptop/TV, open this same page and choose “The Big Screen”. Then point your camera at the code it shows." }));
+
+      var slot = el("div", {});
+      wrap.appendChild(slot);
+      wrap.appendChild(el("button", { class: "btn secondary", onclick: function () { pasteOfferUI(slot); } }, ["Can't scan? Paste the code"]));
+      wrap.appendChild(el("button", { class: "btn ghost", onclick: function () { connected = false; setup(afterResume); } }, ["Skip — just play on this phone"]));
+      render(wrap);
+
+      if (/dev/.test(location.hash)) window.__feedOffer = function (code) { gotOffer(code, slot, afterResume); };
+      var sc = scanner(function (data) { gotOffer(data, slot, afterResume); }, function () {
+        slot.innerHTML = "";
+        slot.appendChild(el("p", { class: "muted center", text: "Camera unavailable — use “Paste the code” below." }));
+      });
+      slot.appendChild(el("p", { class: "center muted", text: "Point at the Big Screen’s QR code…" }));
+      slot.appendChild(sc.video);
+      slot._scanner = sc;
+    }
+
+    function pasteOfferUI(slot) {
+      if (slot._scanner) slot._scanner.stop();
+      slot.innerHTML = "";
+      var ta = el("textarea", { class: "code", placeholder: "Paste the Big Screen code here" });
+      slot.appendChild(ta);
+      slot.appendChild(el("button", { class: "btn", onclick: function () { gotOffer(ta.value, slot); } }, ["Connect"]));
+    }
+
+    async function gotOffer(data, slot, afterResume) {
+      if (slot._scanner) slot._scanner.stop();
+      slot.innerHTML = "";
+      slot.appendChild(el("p", { class: "center muted", text: "Linking…" }));
+      link.onopen = function () {
+        connected = true;
+        SFX.turn();
+        toast("Connected to Big Screen 📺");
+        if (S) { sendVM(); route(); } else { setup(afterResume); }
+      };
+      link.onclose = function () { connected = false; toast("Screen disconnected"); };
+      link.onmessage = function (m) { /* screen has little to say */ };
+      var answerCode;
+      try {
+        answerCode = await link.acceptOffer(data);
+      } catch (e) {
+        slot.innerHTML = "";
+        slot.appendChild(el("p", { class: "center muted", text: "That code didn’t work. Try again." }));
+        slot.appendChild(el("button", { class: "btn secondary", onclick: function () { pairScreen(afterResume); } }, ["Retry"]));
+        return;
+      }
+      if (/dev/.test(location.hash)) window.__answer = answerCode;
+      var box = el("div", {});
+      box.appendChild(el("div", { class: "step center", text: "Last step — show this to the Big Screen's camera" }));
+      try { box.appendChild(makeQR(answerCode)); }
+      catch (e) {
+        var ta0 = el("textarea", { class: "code" }); ta0.value = answerCode;
+        box.appendChild(el("p", { class: "muted center", text: "Copy this into the Big Screen's paste box:" }));
+        box.appendChild(ta0);
+      }
+      box.appendChild(el("p", { class: "center muted", text: "Waiting for the Big Screen…" }));
+      box.appendChild(el("button", { class: "btn ghost", onclick: function () {
+        var ta = el("textarea", { class: "code" }); ta.value = answerCode;
+        ta.readOnly = true; ta.onfocus = function () { ta.select(); };
+        box.appendChild(el("p", { class: "muted center", style: "margin-top:10px", text: "Can't scan? Send this text to the laptop and paste it there:" }));
+        box.appendChild(ta);
+      }}, ["Show code as text"]));
+      render(el("div", { class: "ctrl" }, [el("h1", { class: "center", text: "Almost there…" }), box]));
+    }
+
+    /* ---------- setup ---------- */
+    function setup(afterResume) {
+      if (afterResume && S) return route();
+      var names = ["Ethan", "Ellie", "Mitch"];
+      var judge = "Erica";
+      var rounds = 10;
+      var wrap = el("div", { class: "ctrl" });
+      wrap.appendChild(el("h1", { class: "center", text: "Who's playing?" }));
+      wrap.appendChild(el("p", { class: "center muted", html: connected ? "<span class='status-dot on'></span>Big Screen connected" : "<span class='status-dot'></span>Solo on this phone" }));
+
+      function nameField(i) {
+        return el("div", { class: "field" }, [
+          el("label", { text: "Guesser " + (i + 1) }),
+          el("input", { type: "text", value: names[i], maxlength: "14", oninput: function (e) { names[i] = e.target.value; } })
+        ]);
+      }
+      wrap.appendChild(el("div", { class: "card" }, [
+        nameField(0), nameField(1), nameField(2),
+        el("div", { class: "field" }, [
+          el("label", { text: "The birthday judge" }),
+          el("input", { type: "text", value: judge, maxlength: "14", oninput: function (e) { judge = e.target.value; } })
+        ])
+      ]));
+
+      var pillRow = el("div", { class: "pill-row" });
+      [5, 10, 15, QUESTIONS.length].forEach(function (n, i) {
+        var b = el("button", { class: n === rounds ? "active" : "", text: i === 3 ? "All " + n : String(n), onclick: function () {
+          rounds = n;
+          Array.prototype.forEach.call(pillRow.children, function (c) { c.classList.remove("active"); });
+          b.classList.add("active");
+        }});
+        pillRow.appendChild(b);
+      });
+      wrap.appendChild(el("div", { class: "card" }, [ el("label", { class: "field", text: "How many rounds?" }), pillRow ]));
+
+      wrap.appendChild(el("button", { class: "btn", onclick: function () {
+        S = {
+          guessers: names.map(function (s, i) { return (s || "").trim() || "Player " + (i + 1); }),
+          judge: (judge || "").trim() || "Erica",
+          order: shuffle(QUESTIONS.map(function (_, i) { return i; })).slice(0, rounds),
+          round: 0, phase: "intro", guessStep: 0, data: null, scores: [0, 0, 0],
+          applied: -1, finished: false
+        };
+        saveState(); sendVM(); route();
+      }}, ["Start the quiz →"]));
+
+      if (connected) wrap.appendChild(el("button", { class: "btn ghost", onclick: function () { pairScreen(); } }, ["Re-pair the Big Screen"]));
+      render(wrap);
+      sendVM({ phase: "lobby" });
+    }
+
+    /* ---------- view-model to screen ---------- */
+    function baseVM() {
+      return {
+        names: { guessers: S ? S.guessers : [], judge: S ? S.judge : "Erica" },
+        scores: S ? S.scores : [0, 0, 0],
+        round: S ? S.round : 0,
+        total: S ? S.order.length : 0
+      };
+    }
+    function guesserOrder() {
+      var r = S.round % 3;
+      return [0, 1, 2].slice(r).concat([0, 1, 2].slice(0, r));
+    }
+    function curQ() { return QUESTIONS[S.order[S.round]]; }
+
+    function sendVM(extra) {
+      if (!connected) return;
+      var vm = baseVM();
+      if (extra) Object.keys(extra).forEach(function (k) { vm[k] = extra[k]; });
+      else vm = decorateVM(vm);
+      link.send({ t: "vm", vm: vm });
+    }
+    function decorateVM(vm) {
+      if (!S) { vm.phase = "lobby"; return vm; }
+      var q = curQ();
+      if (S.phase === "intro") { vm.phase = "round-intro"; vm.cat = q.cat; }
+      else if (S.phase === "erica-answer") { vm.phase = "question"; vm.stage = "erica"; vm.cat = q.cat; vm.q = q.q; vm.options = q.options; vm.guessLocked = [false, false, false]; }
+      else if (S.phase === "guess") {
+        vm.phase = "question"; vm.stage = "guessing"; vm.cat = q.cat; vm.q = q.q; vm.options = q.options;
+        var ord = guesserOrder();
+        var locked = [false, false, false];
+        for (var i = 0; i < S.guessStep; i++) locked[ord[i]] = true;
+        vm.guessLocked = locked;
+        vm.activeGuesser = S.guessStep < 3 ? ord[S.guessStep] : null;
+      } else if (S.phase === "rank") { vm.phase = "ranking"; vm.cat = q.cat; vm.q = q.q; vm.options = q.options; }
+      else if (S.phase === "reveal") {
+        vm.phase = "reveal"; vm.cat = q.cat; vm.q = q.q; vm.options = q.options;
+        vm.ericaAnswer = S.data.ericaAnswer; vm.ranking = S.data.ranking; vm.guesses = S.data.guesses;
+        vm.roundPoints = [0, 1, 2].map(roundPoints);
+        vm.prevScores = S.applied === S.round
+          ? [0, 1, 2].map(function (i) { return S.scores[i] - vm.roundPoints[i].total; })
+          : S.scores.slice();
+      } else if (S.phase === "end") {
+        vm.phase = "end";
+      }
+      return vm;
+    }
+
+    /* ---------- phase router ---------- */
+    function route() {
+      saveState();
+      if (S.phase === "intro") return cIntro();
+      if (S.phase === "erica-answer") return cEricaAnswer();
+      if (S.phase === "guess") return cGuess();
+      if (S.phase === "rank") return cRank();
+      if (S.phase === "reveal") return cReveal();
+      if (S.phase === "end") return cEnd();
+    }
+    function go(phase) { S.phase = phase; saveState(); if (phase !== "reveal") sendVM(); route(); }
+
+    function handoff(emoji, name, sub, btn, next) {
+      render(el("div", { class: "ctrl" }, [
+        el("div", { class: "grow" }),
+        el("div", { class: "handoff" }, [
+          el("div", { class: "emoji", text: emoji }),
+          el("p", { class: "muted", text: sub }),
+          el("div", { class: "big", text: name })
+        ]),
+        el("div", { class: "grow" }),
+        el("button", { class: "btn", onclick: next }, [btn])
+      ]));
+    }
+
+    function cIntro() {
+      var q = curQ();
+      render(el("div", { class: "ctrl" }, [
+        el("div", { class: "progress center", text: "Round " + (S.round + 1) + " of " + S.order.length }),
+        el("div", { class: "center", style: "margin:18px 0" }, [el("span", { class: "tag", text: q.cat })]),
+        el("h2", { class: "center", text: q.q }),
+        el("div", { class: "grow" }),
+        el("p", { class: "muted center", text: connected ? "Everyone read it on the Big Screen. Then " + S.judge + " answers first, in secret." : "Read it out. Then " + S.judge + " answers first, in secret." }),
+        el("button", { class: "btn", onclick: function () {
+          S.data = { ericaAnswer: null, guesses: [null, null, null], ranking: [] };
+          S.guessStep = 0; go("erica-answer");
+        }}, ["Pass phone to " + S.judge]),
+        el("button", { class: "btn ghost", onclick: function () {
+          if (confirm("Quit this game?")) { clearState(); location.search = ""; }
+        }}, ["Quit game"])
+      ]));
+    }
+
+    function pickList(onConfirm, confirmLabel) {
+      var q = curQ(), sel = null, btn;
+      var list = el("div", {}, q.options.map(function (opt, i) {
+        return el("button", { class: "opt", onclick: function () {
+          sel = i;
+          Array.prototype.forEach.call(list.children, function (c, ci) { c.classList.toggle("selected", ci === i); });
+          btn.disabled = false;
+        }}, [el("span", { class: "badge", text: letter(i) }), el("span", { text: opt })]);
+      }));
+      btn = el("button", { class: "btn", disabled: "disabled", onclick: function () { onConfirm(sel); } }, [confirmLabel]);
+      return { list: list, btn: btn };
+    }
+
+    function cEricaAnswer() {
+      handoff("🙈", S.judge, "Everyone else, look away!", "I'm " + S.judge + " — show me", function () {
+        var q = curQ();
+        var p = pickList(function (sel) { S.data.ericaAnswer = sel; go("guess"); }, "Lock in my answer");
+        render(el("div", { class: "ctrl" }, [
+          el("div", { class: "progress", text: S.judge + "'s secret answer" }),
+          el("div", { class: "question", text: q.q }),
+          p.list,
+          el("p", { class: "muted", text: "Pick what's most true for you. You'll rank your favourites after everyone guesses." }),
+          p.btn
+        ]));
+      });
+    }
+
+    function cGuess() {
+      var ord = guesserOrder();
+      if (S.guessStep >= 3) return go("rank");
+      var gi = ord[S.guessStep];
+      var name = S.guessers[gi];
+      handoff("📱", name, "Pass the phone to", "I'm " + name + " — ready", function () {
+        var q = curQ();
+        var p = pickList(function (sel) {
+          S.data.guesses[gi] = sel; S.guessStep++; saveState(); sendVM(); go("guess");
+        }, "Lock in guess");
+        render(el("div", { class: "ctrl" }, [
+          el("div", { class: "progress", text: name + " — what did " + S.judge + " pick?" }),
+          el("div", { class: "question", text: q.q }),
+          p.list, p.btn
+        ]));
+      });
+    }
+
+    function cRank() {
+      handoff("🏆", S.judge, "Pass back to", "Rank my favourites", function () {
+        var q = curQ(), ranking = [], list, btn, hint;
+        function paint() {
+          Array.prototype.forEach.call(list.children, function (c, ci) {
+            var pos = ranking.indexOf(ci);
+            c.querySelector(".rankmark").textContent = pos === -1 ? "" : MEDALS[pos];
+            c.classList.toggle("selected", pos !== -1);
+          });
+          btn.disabled = ranking.length < 3;
+          hint.textContent = ranking.length < 3
+            ? "Tap #1, then #2, then #3  (" + ranking.length + "/3)"
+            : "Tap a medalled answer to clear it.";
+        }
+        list = el("div", {}, q.options.map(function (opt, i) {
+          return el("button", { class: "opt", onclick: function () {
+            var pos = ranking.indexOf(i);
+            if (pos !== -1) ranking.splice(pos, 1);
+            else if (ranking.length < 3) ranking.push(i);
+            paint();
+          }}, [el("span", { class: "rankmark" }), el("span", { text: opt })]);
+        }));
+        hint = el("p", { class: "muted" });
+        btn = el("button", { class: "btn", disabled: "disabled", onclick: function () {
+          S.data.ranking = ranking.slice(); go("reveal");
+        }}, ["Reveal the scores 🎉"]);
+        render(el("div", { class: "ctrl" }, [
+          el("div", { class: "progress", text: S.judge + "'s ranking" }),
+          el("div", { class: "question", text: q.q }),
+          list, hint, btn
+        ]));
+        paint();
+      });
+    }
+
+    function roundPoints(gi) {
+      var pick = S.data.guesses[gi];
+      if (pick == null) return { total: 0, parts: ["No pick"] };
+      var total = 0, parts = [];
+      var rp = S.data.ranking.indexOf(pick);
+      if (rp !== -1) { total += RANK_PTS[rp]; parts.push("Erica's " + MEDALS[rp] + " (+" + RANK_PTS[rp] + ")"); }
+      if (pick === S.data.ericaAnswer) { total += MATCH_BONUS; parts.push("Matched " + S.judge + " (+" + MATCH_BONUS + ")"); }
+      if (total === 0) parts.push("Nothing — brutal");
+      return { total: total, parts: parts };
+    }
+
+    function cReveal() {
+      var q = curQ();
+      var results = [0, 1, 2].map(roundPoints);
+      if (S.applied !== S.round) {
+        results.forEach(function (r, i) { S.scores[i] += r.total; });
+        S.applied = S.round; saveState();
+      }
+      sendVM();
+      var kids = [
+        el("div", { class: "progress center", text: "Round " + (S.round + 1) + " results" }),
+        el("div", { class: "question center", text: q.q }),
+        el("p", { class: "muted", html: "<b>" + esc(S.judge) + "</b> answered <b style='color:var(--magenta)'>" + letter(S.data.ericaAnswer) + "</b> and ranked:" })
+      ];
+      q.options.forEach(function (opt, i) {
+        var rp = S.data.ranking.indexOf(i);
+        var isE = i === S.data.ericaAnswer;
+        var by = [0, 1, 2].filter(function (gi) { return S.data.guesses[gi] === i; }).map(function (gi) { return S.guessers[gi]; });
+        kids.push(el("div", { class: "reveal-opt" + (isE ? " erica" : "") }, [
+          el("div", { class: "top" }, [
+            el("span", { text: letter(i) + ".  " + opt }),
+            rp !== -1 ? el("span", { text: MEDALS[rp] }) : null
+          ]),
+          isE ? el("div", { class: "who", text: "← " + S.judge + "'s own answer" }) : null,
+          by.length ? el("div", { class: "who", text: "Guessed by: " + by.join(", ") }) : null
+        ]));
+      });
+      kids.push(el("h3", { style: "margin-top:20px", text: "Points this round" }));
+      [0, 1, 2].forEach(function (gi) {
+        kids.push(el("div", { class: "scoreline" }, [
+          el("div", {}, [el("div", { text: S.guessers[gi] }), el("div", { class: "brk", text: results[gi].parts.join("  ·  ") })]),
+          el("span", { class: "pts", text: "+" + results[gi].total })
+        ]));
+      });
+      kids.push(el("h3", { style: "margin-top:20px", text: "Total" }));
+      scoreboard(kids);
+      var last = S.round >= S.order.length - 1;
+      kids.push(el("button", { class: "btn", onclick: function () {
+        if (last) { S.finished = true; go("end"); }
+        else { S.round++; S.data = null; S.applied = -1; go("intro"); }
+      }}, [last ? "See the final results 👑" : "Next round →"]));
+      render(el("div", { class: "ctrl" }, kids));
+    }
+
+    function scoreboard(kids) {
+      var ranked = [0, 1, 2].map(function (i) { return { i: i, s: S.scores[i] }; }).sort(function (a, b) { return b.s - a.s; });
+      var top = ranked[0].s;
+      ranked.forEach(function (r) {
+        kids.push(el("div", { class: "scoreline" + (r.s === top && top > 0 ? " leader" : "") }, [
+          el("span", { text: (r.s === top && top > 0 ? "👑 " : "") + S.guessers[r.i] }),
+          el("span", { class: "pts", text: r.s })
+        ]));
+      });
+    }
+
+    function cEnd() {
+      confetti(120);
+      var ranked = [0, 1, 2].map(function (i) { return { i: i, s: S.scores[i] }; }).sort(function (a, b) { return b.s - a.s; });
+      var winners = ranked.filter(function (r) { return r.s === ranked[0].s; });
+      var title = winners.length > 1
+        ? "Tie: " + winners.map(function (w) { return S.guessers[w.i]; }).join(" & ") + "!"
+        : S.guessers[winners[0].i] + " knows Erica best!";
+      var kids = [
+        el("div", { class: "center", style: "font-size:3.4rem", text: "👑" }),
+        el("h1", { class: "center", text: title }),
+        el("h3", { class: "center", style: "color:var(--gold)", text: "Happy Birthday, " + S.judge + "!" }),
+        el("h3", { text: "Final scoreboard" })
+      ];
+      scoreboard(kids);
+      kids.push(el("button", { class: "btn", onclick: function () { clearState(); location.search = ""; } }, ["Play again"]));
+      render(el("div", { class: "ctrl" }, kids));
+    }
+
+    return { start: start };
+  })();
+
+  /* ============================================================
+     BIG SCREEN  — pure display, driven by view-models
+  ============================================================ */
+  var Screen = (function () {
+    var link = new PeerLink();
+    var lastVM = null, lastPhaseKey = "";
+
+    function start() {
+      document.body.dataset.role = "screen";
+      muted = false; sfxInit();
+      pairing();
+    }
+
+    function frame(children) {
+      var s = el("div", { class: "screen" }, [
+        el("div", { class: "blob", style: "width:38vw;height:38vw;left:-8vw;top:-6vw;background:var(--magenta);" }),
+        el("div", { class: "blob", style: "width:32vw;height:32vw;right:-6vw;top:4vh;background:var(--cyan);animation-delay:-6s;" }),
+        el("div", { class: "blob", style: "width:30vw;height:30vw;left:30vw;bottom:-12vh;background:var(--violet);animation-delay:-11s;" }),
+        el("button", { class: "mutebtn", onclick: function (e) {
+          muted = !muted; e.target.textContent = muted ? "🔇" : "🔊"; if (!muted) sfxInit();
+        }, text: "🔊" }),
+        el("div", { class: "stage" }, children)
+      ]);
+      render(s);
+    }
+
+    function pairing() {
+      var wrap = el("div", { class: "pair-wrap" });
+      wrap.appendChild(el("h1", { text: "🎂 Erica's Birthday Quiz" }));
+      var slot = el("div", {}); wrap.appendChild(slot);
+      frame([wrap]);
+
+      slot.appendChild(el("p", { text: "Generating link…" }));
+      link.onopen = function () { SFX.round(); waitLobby(); };
+      link.onclose = function () { toast("Controller disconnected"); pairing(); };
+      link.onmessage = onMessage;
+
+      link.createOffer().then(function (code) {
+        if (/dev/.test(location.hash)) { window.__offer = code; window.__link = link; window.__acceptReply = function (d) { return link.acceptAnswer(d); }; }
+        slot.innerHTML = "";
+        slot.appendChild(el("div", { class: "step", text: "Step 1 — on the phone, open this page & tap “The Controller”, then scan:" }));
+        try { slot.appendChild(makeQR(code)); }
+        catch (e) {
+          var ta = el("textarea", { class: "code" }); ta.value = code;
+          slot.appendChild(el("p", { text: "Paste this into the phone:" })); slot.appendChild(ta);
+        }
+        slot.appendChild(el("div", { class: "step", text: "Step 2 — the phone shows a code back. Bring it here:" }));
+        slot.appendChild(el("button", { class: "pairbtn go", text: "📷  Scan the phone's code", onclick: function () { scanReply(slot); } }));
+        slot.appendChild(el("button", { class: "pairbtn", text: "⌨  Paste the phone's code instead", onclick: function () { pasteReply(slot); } }));
+      }).catch(function () {
+        slot.innerHTML = ""; slot.appendChild(el("p", { text: "Couldn't start the connection. Reload the page." }));
+      });
+    }
+
+    function scanReply(slot) {
+      slot.innerHTML = "";
+      slot.appendChild(el("div", { class: "step", text: "Hold the phone's QR steady, ~20cm from this camera" }));
+      var sc = scanner(function (data) { acceptReply(data, slot); }, function () {
+        slot.innerHTML = "";
+        slot.appendChild(el("p", { text: "No camera available here." }));
+        pasteReply(slot);
+      });
+      slot.appendChild(sc.video);
+      slot.appendChild(el("button", { class: "pairbtn", text: "⌨  Paste the code instead", onclick: function () { sc.stop(); pasteReply(slot); } }));
+    }
+    function pasteReply(slot) {
+      slot.innerHTML = "";
+      slot.appendChild(el("div", { class: "step", text: "Paste the code the phone is showing" }));
+      var ta = el("textarea", { class: "code", placeholder: "Paste the phone's code here" });
+      slot.appendChild(ta);
+      slot.appendChild(el("button", { class: "pairbtn go", text: "Connect", onclick: function () { acceptReply(ta.value, slot); } }));
+    }
+    async function acceptReply(data, slot) {
+      try { await link.acceptAnswer(data); slot.innerHTML = ""; slot.appendChild(el("p", { text: "Linking…" })); }
+      catch (e) { toast("That code didn't work — try again"); }
+    }
+
+    function waitLobby() {
+      frame([el("div", { class: "body" }, [
+        el("div", { class: "roundword pop", text: "Connected" }),
+        el("div", { class: "q fade", text: "Waiting for the game to start on the phone…" }),
+        el("div", { class: "cat fade", text: "📱 → 📺" })
+      ])]);
+    }
+
+    function onMessage(m) {
+      if (m.t !== "vm") return;
+      applyVM(m.vm);
+    }
+
+    if (/dev/.test(location.hash)) window.__applyVM = applyVM;
+
+    /* ---------- render a view-model ---------- */
+    function pods(vm, opts) {
+      opts = opts || {};
+      var row = el("div", { class: "pods" });
+      // judge pod
+      var jp = el("div", { class: "pod judge" }, [
+        el("div", { class: "av", text: AV_JUDGE }),
+        el("div", { class: "nm", text: vm.names.judge }),
+        el("div", { class: "sc", style: "font-size:1.4vw;color:var(--magenta)", text: "JUDGE" })
+      ]);
+      if (opts.judgeActive) jp.classList.add("active");
+      // guesser pods
+      var g = vm.names.guessers.map(function (nm, i) {
+        var p = el("div", { class: "pod" }, [
+          el("div", { class: "plus", id: "plus" + i }),
+          el("div", { class: "av", text: AV_GUESS[i] }),
+          el("div", { class: "nm", text: nm }),
+          el("div", { class: "sc", text: vm.scores[i] }),
+          el("div", { class: "stamp", text: "LOCKED" })
+        ]);
+        if (opts.locked && opts.locked[i]) p.classList.add("locked");
+        if (opts.active === i) p.classList.add("active");
+        return p;
+      });
+      row.appendChild(g[0]); row.appendChild(jp); row.appendChild(g[1]); row.appendChild(g[2]);
+      return row;
+    }
+
+    function optionGrid(vm, cfg) {
+      cfg = cfg || {};
+      var grid = el("div", { class: "opts" });
+      vm.options.forEach(function (opt, i) {
+        var cls = "ocard";
+        var rankPos = cfg.ranking ? cfg.ranking.indexOf(i) : -1;
+        if (rankPos !== -1) cls += " ranked";
+        if (cfg.markErica && cfg.ericaAnswer === i) cls += " erica";
+        var kids = [
+          el("div", { class: "let", text: letter(i) }),
+          el("div", { text: opt })
+        ];
+        if (cfg.guesses) {
+          var chips = el("div", { class: "pickchips" });
+          cfg.guesses.forEach(function (gi, pi) { if (gi === i) chips.appendChild(el("span", { class: "chip", text: vm.names.guessers[pi] })); });
+          if (chips.children.length) kids.push(chips);
+        }
+        kids.push(el("div", { class: "medal", text: rankPos !== -1 ? MEDALS[rankPos] : "" }));
+        grid.appendChild(el("div", { class: cls }, kids));
+      });
+      return grid;
+    }
+
+    function applyVM(vm) {
+      var phaseKey = vm.phase + ":" + vm.round + ":" + (vm.stage || "") + ":" + (vm.activeGuesser == null ? "" : vm.activeGuesser)
+        + ":" + (vm.guessLocked ? vm.guessLocked.join("") : "");
+      var changed = phaseKey !== lastPhaseKey;
+      lastPhaseKey = phaseKey;
+      lastVM = vm;
+
+      if (vm.phase === "lobby") {
+        if (!vm.names.guessers.length) return waitLobby();
+        frame([
+          el("div", { class: "body" }, [
+            el("div", { class: "roundword pop", text: "Get Ready" }),
+            el("div", { class: "q fade", text: "How Well Do You Know Erica?" })
+          ]),
+          pods(vm, {})
+        ]);
+        return;
+      }
+
+      if (vm.phase === "round-intro") {
+        if (changed) SFX.round();
+        frame([el("div", { class: "body" }, [
+          el("div", { class: "roundword pop", text: "Round " + (vm.round + 1) + " / " + vm.total }),
+          el("div", { class: "cat fade", style: "margin-top:2vh", text: vm.cat }),
+          el("div", { class: "huge pop", style: "font-size:6vw;margin-top:1vh", text: "⚔️" })
+        ])]);
+        return;
+      }
+
+      if (vm.phase === "question") {
+        var sub, opts;
+        if (vm.stage === "erica") {
+          sub = vm.names.judge + " is locking in a secret answer…";
+          opts = {};
+        } else {
+          var n = vm.guessLocked.filter(Boolean).length;
+          sub = (vm.activeGuesser != null ? vm.names.guessers[vm.activeGuesser] + " is guessing" : "Guesses in") + "  ·  " + n + " / 3 locked";
+          opts = { active: vm.activeGuesser, locked: vm.guessLocked };
+          if (changed && n > 0) SFX.lock();
+        }
+        frame([
+          el("div", { class: "body" }, [
+            el("div", { class: "cat fade", text: vm.cat }),
+            el("div", { class: "q fade", text: vm.q }),
+            optionGrid(vm, {}),
+            el("div", { class: "roundword fade", style: "margin-top:3vh;font-size:1.6vw;color:var(--cyan)", text: sub })
+          ]),
+          pods(vm, vm.stage === "erica" ? { judgeActive: true } : opts)
+        ]);
+        return;
+      }
+
+      if (vm.phase === "ranking") {
+        if (changed) SFX.turn();
+        frame([
+          el("div", { class: "body" }, [
+            el("div", { class: "cat fade", text: vm.cat }),
+            el("div", { class: "q fade", text: vm.q }),
+            optionGrid(vm, {}),
+            el("div", { class: "roundword fade", style: "margin-top:3vh;font-size:1.8vw;color:var(--magenta)", text: "👑 " + vm.names.judge + " is ranking her favourites…" })
+          ]),
+          pods(vm, { judgeActive: true })
+        ]);
+        return;
+      }
+
+      if (vm.phase === "reveal") {
+        renderReveal(vm, changed);
+        return;
+      }
+
+      if (vm.phase === "end") {
+        renderEnd(vm);
+        return;
+      }
+    }
+
+    function renderReveal(vm, animate) {
+      var podRow = pods(vm, {});
+      var grid = optionGrid(vm, { ranking: [], markErica: false });
+      var caption = el("div", { class: "roundword fade", style: "margin-top:2.2vh;font-size:1.7vw;color:var(--cyan);text-transform:none;letter-spacing:1px", text: vm.names.judge + " picked " + letter(vm.ericaAnswer) });
+      frame([
+        el("div", { class: "body" }, [
+          el("div", { class: "cat fade", text: vm.cat }),
+          el("div", { class: "q fade", text: vm.q }),
+          grid, caption
+        ]),
+        podRow
+      ]);
+      if (!animate) {
+        // static (e.g. re-connect): show everything at once
+        showRevealFinal(vm, grid, podRow, caption);
+        return;
+      }
+      // pods start at pre-round scores, then count up in step 4
+      var prev = vm.prevScores || vm.scores;
+      [0, 1, 2].forEach(function (i) {
+        podRow.children[i === 0 ? 0 : i + 1].querySelector(".sc").textContent = prev[i];
+      });
+      SFX.reveal();
+      var cards = grid.children;
+      // 1) flip in Erica's ranking one at a time
+      vm.ranking.forEach(function (optIdx, pos) {
+        setTimeout(function () {
+          var c = cards[optIdx];
+          c.classList.add("ranked");
+          c.querySelector(".medal").textContent = MEDALS[pos];
+          SFX.points();
+        }, 700 + pos * 900);
+      });
+      // 2) mark Erica's own answer
+      setTimeout(function () {
+        cards[vm.ericaAnswer].classList.add("erica");
+        SFX.lock();
+      }, 700 + 3 * 900 + 300);
+      // 3) show who guessed what + points
+      setTimeout(function () {
+        for (var i = 0; i < vm.options.length; i++) {
+          var chips = el("div", { class: "pickchips" });
+          vm.guesses.forEach(function (gi, pi) {
+            if (gi === i) chips.appendChild(el("span", { class: "chip", text: vm.names.guessers[pi] }));
+          });
+          if (chips.children.length) cards[i].insertBefore(chips, cards[i].querySelector(".medal"));
+        }
+        // points fly up on pods
+        vm.roundPoints.forEach(function (rp, i) {
+          var pod = podRow.children[i === 0 ? 0 : i + 1]; // guesser pods at 0,2,3
+          var plus = pod.querySelector(".plus");
+          plus.textContent = "+" + rp.total;
+          plus.classList.add("go");
+          if (rp.total >= 3) confetti(20);
+        });
+        SFX.points();
+        caption.textContent = pointSummary(vm);
+      }, 700 + 3 * 900 + 1100);
+      // 4) refresh scores on pods
+      setTimeout(function () {
+        vm.roundPoints.forEach(function (rp, i) {
+          var pod = podRow.children[i === 0 ? 0 : i + 1];
+          pod.querySelector(".sc").textContent = vm.scores[i];
+        });
+      }, 700 + 3 * 900 + 2600);
+    }
+
+    function showRevealFinal(vm, grid, podRow, caption) {
+      var cards = grid.children;
+      vm.ranking.forEach(function (optIdx, pos) {
+        cards[optIdx].classList.add("ranked");
+        cards[optIdx].querySelector(".medal").textContent = MEDALS[pos];
+      });
+      cards[vm.ericaAnswer].classList.add("erica");
+      for (var i = 0; i < vm.options.length; i++) {
+        var chips = el("div", { class: "pickchips" });
+        vm.guesses.forEach(function (gi, pi) { if (gi === i) chips.appendChild(el("span", { class: "chip", text: vm.names.guessers[pi] })); });
+        if (chips.children.length) cards[i].insertBefore(chips, cards[i].querySelector(".medal"));
+      }
+      caption.textContent = pointSummary(vm);
+    }
+
+    function pointSummary(vm) {
+      return vm.names.guessers.map(function (n, i) { return n + " +" + vm.roundPoints[i].total; }).join("   ·   ");
+    }
+
+    function renderEnd(vm) {
+      SFX.win(); confetti(200);
+      var ranked = [0, 1, 2].map(function (i) { return { i: i, s: vm.scores[i] }; }).sort(function (a, b) { return b.s - a.s; });
+      var winners = ranked.filter(function (r) { return r.s === ranked[0].s; });
+      var title = winners.length > 1
+        ? "It's a tie!  " + winners.map(function (w) { return vm.names.guessers[w.i]; }).join(" & ")
+        : vm.names.guessers[winners[0].i] + " knows Erica best!";
+      var maxS = Math.max(1, ranked[0].s);
+      var board = el("div", { class: "bigscoreboard" });
+      ranked.forEach(function (r, k) {
+        var fill = el("div", { class: "fill" });
+        board.appendChild(el("div", { class: "bar" }, [
+          el("div", { class: "lbl", text: (k === 0 && r.s > 0 ? "👑 " : "") + vm.names.guessers[r.i] }),
+          el("div", { class: "track" }, [fill]),
+          el("div", { class: "val", text: r.s })
+        ]));
+        setTimeout(function () { fill.style.width = (r.s / maxS * 100) + "%"; }, 300 + k * 250);
+      });
+      frame([el("div", { class: "body" }, [
+        el("div", { class: "crown pop", text: "👑" }),
+        el("div", { class: "huge pop", style: "font-size:4.6vw", text: title }),
+        el("div", { class: "happy fade", style: "margin:1.5vh 0 3vh", text: "Happy Birthday, " + vm.names.judge + "!" }),
+        board
+      ])]);
+    }
+
+    return { start: start };
+  })();
+
+  /* ============================== boot ============================== */
+  boot();
+})();
+</script>
+</body>
+</html>
