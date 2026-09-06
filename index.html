@@ -479,7 +479,20 @@
     });
     c.on("close", function () { if (everConnected && self.onclose) self.onclose(); });
   };
-  Link.prototype._markPeer = function () { if (!this._peer) { this._peer = true; if (this.onopen) this.onopen(); } };
+  Link.prototype._markPeer = function () {
+    if (this._peer) return;
+    this._peer = true;
+    if (this.onopen) this.onopen();
+    // Controller keeps re-asserting the latest game state so a single dropped
+    // message (blip / rate-limit) can't leave the Big Screen stuck — matters
+    // most for the final 'end' view, which has no "next message" to self-heal.
+    var self = this;
+    if (this.role === "controller" && !this._hb) {
+      this._hb = setInterval(function () {
+        if (self._peer && self._lastTx && self.client && self.client.connected) self._pub(self._lastTx, false);
+      }, 6000);
+    }
+  };
   if (/dev/.test(location.hash)) window.Link = Link;
 
   /* ============================================================
@@ -857,6 +870,8 @@
 
     function cEnd() {
       confetti(120);
+      // nudge the Big Screen a few times in case the 'end' VM raced a reconnect
+      sendVM(); setTimeout(sendVM, 800); setTimeout(sendVM, 2500);
       var ranked = [0, 1, 2].map(function (i) { return { i: i, s: S.scores[i] }; }).sort(function (a, b) { return b.s - a.s; });
       var winners = ranked.filter(function (r) { return r.s === ranked[0].s; });
       var title = winners.length > 1
@@ -882,6 +897,7 @@
   var Screen = (function () {
     var link = new Link();
     var lastKey = "";
+    var lastVMJson = "";
     var code = null;
     var paired = false;
 
@@ -1125,6 +1141,9 @@
     }
 
     function applyVM(vm) {
+      var vj = JSON.stringify(vm);
+      if (vj === lastVMJson) return;   // ignore the controller's heartbeat re-sends of unchanged state
+      lastVMJson = vj;
       var key = [vm.phase, vm.round, vm.active, (vm.locked || []).join(""), (vm.rankingSoFar || []).join("")].join("|");
       var changed = key !== lastKey; lastKey = key;
 
