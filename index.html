@@ -83,6 +83,10 @@
   details p{font-size:.9rem;color:var(--muted);margin-top:10px;}
   .status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:middle;}
   .status-dot.on{background:var(--green);box-shadow:0 0 8px var(--green);}
+  .restartbtn{display:block;margin:14px auto 0;background:none;border:none;color:var(--muted);
+    font-weight:800;font-size:.82rem;font-family:var(--fdisp);letter-spacing:.06em;text-transform:uppercase;
+    text-decoration:underline;cursor:pointer;padding:8px;}
+  .restartbtn:active{opacity:.6;}
   .qrbox{background:#fff;border-radius:16px;padding:16px;max-width:340px;margin:14px auto;}
   .qrbox svg{display:block;width:100%;height:auto;}
   .pairbtn{display:block;width:100%;max-width:340px;margin:10px auto 0;border:1.5px solid var(--line);
@@ -517,11 +521,12 @@
     function resumePrompt(saved) {
       render(el("div", { class: "ctrl" }, [
         el("h1", { class: "center", text: "Game in progress" }),
-        el("p", { class: "center muted", text: "Round " + (saved.round + 1) + " of " + saved.order.length + "." }),
+        el("p", { class: "center muted", text: "You were on round " + (saved.round + 1) + " of " + saved.order.length + "." }),
         el("div", { class: "card" }, [
-          el("button", { class: "btn", onclick: function () { S = saved; pairScreen(true); } }, ["Resume"]),
-          el("button", { class: "btn secondary", onclick: function () { clearState(); pairScreen(); } }, ["Start a new game"])
-        ])
+          el("button", { class: "btn", onclick: function () { S = saved; pairScreen(true); } }, ["▶  Pick up where you left off"]),
+          el("button", { class: "btn secondary", onclick: function () { clearState(); S = null; pairScreen(); } }, ["⟳  Start over — new game"])
+        ]),
+        el("p", { class: "footer-note", text: "You can also restart mid-game from the “⟳ New game” link on any screen." })
       ]));
     }
 
@@ -694,6 +699,18 @@
       return vm;
     }
 
+    /* ---------- restart ---------- */
+    function newGame() {
+      if (!confirm("Start a brand-new game? The current round and all scores will be cleared.")) return;
+      clearState();
+      try { link.clearRetained(); } catch (e) {}
+      S = null;
+      if (connected) setup(); else location.search = "";
+    }
+    function restartLink() {
+      return el("button", { class: "restartbtn", onclick: newGame }, ["⟳ New game"]);
+    }
+
     /* ---------- router ---------- */
     function route() {
       saveState();
@@ -714,7 +731,8 @@
           el("div", { class: "big", text: name })
         ]),
         el("div", { class: "grow" }),
-        el("button", { class: "btn", onclick: next }, [btn])
+        el("button", { class: "btn", onclick: next }, [btn]),
+        restartLink()
       ]));
     }
 
@@ -730,9 +748,7 @@
           S.data = { answers: [null, null, null, null], shuffle: null, ranking: [] };
           S.typeStep = 0; go("type");
         }}, ["Start typing answers"]),
-        el("button", { class: "btn ghost", onclick: function () {
-          if (confirm("Quit this game?")) { clearState(); location.search = ""; }
-        }}, ["Quit game"])
+        el("button", { class: "btn ghost", onclick: newGame }, ["⟳ Start a new game"])
       ]));
     }
 
@@ -807,7 +823,7 @@
       render(el("div", { class: "ctrl" }, [
         el("div", { class: "progress", text: judgeName() + " ranks the four answers" }),
         el("div", { class: "prompt", text: p.q }),
-        list, hint, btn
+        list, hint, btn, restartLink()
       ]));
       paint();
     }
@@ -854,6 +870,7 @@
         if (last) { S.finished = true; go("end"); }
         else { S.round++; S.data = null; S.applied = -1; go("intro"); }
       }}, [last ? "See the final results 👑" : "Next round →"]));
+      kids.push(restartLink());
       render(el("div", { class: "ctrl" }, kids));
     }
 
