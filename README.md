@@ -1,15 +1,15 @@
 # 🎂 How Well Do You Know Erica?
 
-A pass-the-phone birthday quiz game. Three friends (Ethan, Ellie, Mitch) secretly
-guess how the birthday judge (Erica) thinks. Erica ranks the answers each round,
-and points are handed out based on her ranking — plus a bonus for nailing her
-exact pick.
+A pass-the-phone birthday party game. Every round is an open-ended prompt.
+**Everyone types an answer** (Erica included). The four answers show up shuffled
+and anonymous, **Erica ranks them 1–4**, and then the reveal shows who wrote
+what and hands out points.
 
 Two devices:
 
-- **📱 The Controller** — the phone you tap on and pass around.
-- **📺 The Big Screen** — a laptop or TV everyone watches. Animated game-show
-  visuals, live scoreboard, confetti, sound effects.
+- **📱 The Controller** — the phone you type on and pass around.
+- **📺 The Big Screen** — a laptop or TV everyone watches. Prompts, the
+  anonymous answers, live scoreboard, medal reveal, confetti, sound.
 
 You can also just play on **one phone** (skip the Big Screen at pairing).
 
@@ -24,26 +24,34 @@ Once it's on GitHub Pages (see below), open the same URL on both devices:
    the laptop's QR code.
 3. The phone then shows a QR code back — hold it up to the **laptop's webcam**
    (click *"Scan the phone's code"* on the Big Screen first).
-   - No webcam? Use the **"Paste the phone's code instead"** buttons on both
-     sides — send the code to yourself via any chat app and paste it in.
-4. Enter player names, pick the number of rounds, and go.
+   - No webcam? Use the **"Paste the code"** buttons on both sides — send the
+     code to yourself via any chat app and paste it in.
+4. Enter the four names, pick the number of rounds, go.
 
-The phone and laptop talk directly to each other (peer-to-peer WebRTC) — **no
-server**. They just need to be on the **same Wi-Fi**. Pairing takes about 20
-seconds.
+The phone and laptop talk **directly** to each other (peer-to-peer WebRTC) — **no
+server**. They just need the **same Wi-Fi**. Pairing takes about 20 seconds.
+
+### A round, step by step
+
+1. Prompt appears on the Big Screen, e.g. *"Erica's villain origin story: it all
+   started when ___"*.
+2. Phone goes round the room — **Ethan, Ellie, Mitch, then Erica** each secretly
+   type an answer. Erica goes last so she never reacts to anyone else's.
+3. The four answers appear on the Big Screen, shuffled and anonymous.
+4. Erica (still holding the phone) **ranks all four**, best to worst.
+5. Reveal: each answer flips to show who wrote it — including which one was
+   Erica's own — and points land.
 
 ### Scoring
 
-Each round everyone (Erica too) secretly picks an answer. Then Erica ranks her
-**top 3**.
-
-| Your guess is Erica's… | Points |
+| Your answer is Erica's… | Points |
 |---|---|
-| ranked #1 | 3 |
-| ranked #2 | 2 |
-| ranked #3 | 1 |
-| exact answer she picked for herself | +2 bonus |
+| #1 | 3 |
+| #2 | 2 |
+| #3 | 1 |
+| #4 | 0 |
 
+One of the four answers is always Erica's own, so the goal is to land above it.
 Most points after all rounds wins. Erica is the judge and isn't scored.
 
 ---
@@ -51,58 +59,41 @@ Most points after all rounds wins. Erica is the judge and isn't scored.
 ## Put it on GitHub Pages
 
 1. Create a new repo on GitHub (e.g. `erica-birthday-quiz`).
-2. Upload these files (keep the folder structure):
-   ```
-   index.html
-   vendor/qrcode.min.js
-   vendor/jsQR.min.js
-   README.md
-   ```
-   Or from this folder:
+2. Push these files (keep the folder structure — `index.html`, `vendor/`, `README.md`):
    ```bash
-   git init
-   git add .
-   git commit -m "Erica's birthday quiz"
-   git branch -M main
    git remote add origin https://github.com/<you>/erica-birthday-quiz.git
    git push -u origin main
    ```
-3. On GitHub: **Settings → Pages → Build and deployment → Source: Deploy from a
-   branch → `main` / `root` → Save**.
-4. Wait ~1 minute. Your game is at
-   `https://<you>.github.io/erica-birthday-quiz/`.
+3. On GitHub: **Settings → Pages → Source: Deploy from a branch → `main` / root → Save**.
+4. Wait ~1 minute. Your game is at `https://<you>.github.io/erica-birthday-quiz/`.
 
-> The camera (QR scanning) only works over **HTTPS**, which GitHub Pages provides.
-> Opening `index.html` straight off the disk won't have camera access — use the
-> Pages URL, or the paste-the-code fallback.
+> QR scanning needs **HTTPS**, which GitHub Pages provides. Opening `index.html`
+> straight off the disk won't have camera access — use the Pages URL, or the
+> paste-the-code fallback.
 
 ---
 
-## Edit the questions
+## Edit the prompts
 
-Open `index.html` and find the `QUESTIONS` array near the top of the `<script>`.
-Each entry is:
+Open `index.html`, find the `PROMPTS` array near the top of the `<script>`:
 
 ```js
-{ cat: "Category shown on screen", q: "The question?", options: [
-  "Answer A", "Answer B", "Answer C", "Answer D"
-]},
+{ cat: "Origin Story", q: "{E}'s villain origin story: it all started when ___" },
 ```
 
-Every question needs **exactly 4 options**. Add, remove, or rewrite freely, then
-re-upload `index.html`.
+- `{E}` is replaced with the judge's name, `{F}` with the first player's name.
+- End prompts with `___` so people know where their answer goes.
 
-Player names default to Ethan / Ellie / Mitch / Erica but are editable on the
-setup screen every game.
+Names default to Ethan / Ellie / Mitch / Erica but are editable every game.
 
 ---
 
 ## Troubleshooting
 
-- **Pairing won't connect:** make sure both devices are on the same Wi-Fi (not one
-  on cellular). Some guest/corporate networks block device-to-device traffic — try
-  a phone hotspot. As a last resort, play on the single phone.
+- **Pairing won't connect:** both devices must be on the same Wi-Fi (not one on
+  cellular). Some guest/office networks block device-to-device traffic — try a
+  phone hotspot, or just play on the single phone.
 - **Laptop can't scan the phone:** use the *paste the code* buttons on both sides.
-- **Updated the questions but the site looks the same:** hard-refresh
-  (Ctrl/Cmd + Shift + R) — GitHub Pages and the browser cache aggressively.
+- **Edited the prompts but the site looks the same:** hard-refresh
+  (Ctrl/Cmd + Shift + R) — GitHub Pages and browsers cache aggressively.
 - **`#dev` in the URL** exposes debug hooks; ignore it for normal play.
