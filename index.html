@@ -130,41 +130,73 @@
   .screen .acard .gain.go{animation:gain 1.6s ease-out forwards;}
   @keyframes gain{0%{opacity:0;transform:translateY(1vh);}20%{opacity:1;}100%{opacity:0;transform:translateY(-3vh);}}
 
-  /* ---- the little stage show (characters while people wait) ---- */
-  .showstage{position:relative;width:92vw;max-width:1400px;height:26vh;margin-top:2vh;pointer-events:none;}
+  /* ---- the stage show: a different scene each round ---- */
+  .showstage{position:relative;width:92vw;max-width:1400px;height:26vh;margin-top:2vh;pointer-events:none;overflow:hidden;}
   .showstage .floor{position:absolute;left:0;right:0;bottom:2.5vh;height:2px;
     background:linear-gradient(90deg,transparent,rgba(163,92,255,.5),rgba(255,63,164,.5),transparent);}
   .showstage .spot{position:absolute;bottom:1vh;width:15vh;height:4vh;border-radius:50%;transform:translateX(-50%);
     background:radial-gradient(closest-side,rgba(255,255,255,.16),transparent);}
-  .showstage .char{position:absolute;bottom:2vh;height:23vh;width:auto;overflow:visible;
+  .showstage .slotwrap{position:absolute;bottom:2vh;transform:translateX(-50%);}
+  .showstage .char{display:block;height:22vh;width:auto;overflow:visible;transform-origin:50% 100%;
     filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));}
-  .showstage .mage{left:6%;animation:sBob 2.6s ease-in-out infinite;}
-  .showstage .orc{left:42%;transform:translateX(-50%);animation:sBob 3.1s ease-in-out infinite;height:21vh;}
-  .showstage .idol{right:6%;animation:sStep .82s ease-in-out infinite alternate;}
-  .showstage .mage .orb{transform-origin:center;animation:sPulse 1.5s ease-in-out infinite;}
-  .showstage .mage .cast{animation:sCast 2.2s ease-out infinite;}
-  .showstage .idol .arm{transform-origin:64px 98px;animation:sWave .82s ease-in-out infinite alternate;}
-  .showstage .orc .axe{transform-origin:22px 108px;animation:sChop 1.7s ease-in-out infinite;}
-  .showstage .dragon{position:absolute;bottom:52%;left:0;width:15vh;height:auto;animation:sFly 16s linear infinite;
-    filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));}
-  .showstage .dragon .wing{transform-origin:56px 42px;animation:sFlap .24s ease-in-out infinite alternate;}
-  .showstage .note,.showstage .spark{position:absolute;opacity:0;font-weight:900;}
-  .showstage .note{color:var(--hot);font-size:3vh;text-shadow:0 0 12px var(--hot);animation:sRise 3.4s ease-in infinite;}
-  .showstage .spark{width:1.3vh;height:1.3vh;background:var(--gold);border-radius:2px;
-    box-shadow:0 0 10px var(--gold);animation:sRise 3s ease-in infinite;}
+  /* idle motion per character */
+  .c-mage  {animation:sBob 2.6s ease-in-out infinite;}
+  .c-orc   {animation:sBob 3.1s ease-in-out infinite;}
+  .c-idol  {animation:sStep .82s ease-in-out infinite alternate;}
+  .c-murloc{animation:sHop .5s ease-in-out infinite;height:15vh;}
+  .c-rogue {animation:sSneak 3.4s ease-in-out infinite;}
+  .c-priest{animation:sBob 3s ease-in-out infinite;}
+  .c-fan   {animation:sBop .46s ease-in-out infinite alternate;height:18vh;}
+  .c-tauren{animation:sStomp 1.4s ease-in-out infinite;height:24vh;}
+  .c-dj    {animation:sBob 1s ease-in-out infinite;height:17vh;}
+  /* moving sub-parts */
+  .p-orb   {transform-origin:center;animation:sPulse 1.5s ease-in-out infinite;}
+  .p-cast  {animation:sCast 2.2s ease-out infinite;}
+  .p-arm   {transform-origin:64px 98px;animation:sWave .82s ease-in-out infinite alternate;}
+  .p-axe   {transform-origin:22px 108px;animation:sChop 1.7s ease-in-out infinite;}
+  .p-halo  {transform-origin:center;animation:sPulse 2s ease-in-out infinite;}
+  .p-holy  {transform-origin:center;animation:sPulse 1.7s ease-in-out infinite;}
+  .p-stick {transform-origin:50% 92%;animation:sWave .46s ease-in-out infinite alternate;}
+  .p-wing  {transform-origin:56px 42px;animation:sFlap .24s ease-in-out infinite alternate;}
+  .p-dagger{transform-origin:center;animation:sTwirl 1.2s linear infinite;}
+  .p-deck  {transform-origin:50% 60%;animation:sScratch .5s ease-in-out infinite alternate;}
+  /* flyer across the whole stage */
+  .flyer{position:absolute;bottom:52%;left:0;width:15vh;height:auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5));
+    animation:sFly 16s linear infinite;}
+  .flyer.rev{animation-name:sFlyRev;}
+  .flyer .p-wing{animation:sFlap .24s ease-in-out infinite alternate;}
+  /* falling / rising effects */
+  .fx{position:absolute;opacity:0;font-weight:900;will-change:transform;}
+  .fx.rise{animation:sRise 3.2s ease-in infinite;}
+  .fx.fall{top:-4vh;animation:sFall 5s linear infinite;}
+  .e-spark{width:1.3vh;height:1.3vh;background:var(--gold);border-radius:2px;box-shadow:0 0 10px var(--gold);}
+  .e-note {color:var(--hot);font-size:3vh;text-shadow:0 0 12px var(--hot);}
+  .e-heart{color:#ff5b8f;font-size:2.6vh;text-shadow:0 0 12px #ff5b8f;}
+  .e-leaf {color:#ff9a3c;font-size:2.6vh;}
+  .e-snow {color:#eaf6ff;font-size:2.4vh;text-shadow:0 0 8px #9fd6ff;}
+  .e-rune {color:var(--cyan);font-size:2.8vh;text-shadow:0 0 12px var(--cyan);}
+  .e-bub  {width:1.6vh;height:1.6vh;border:2px solid var(--cyan);border-radius:50%;box-shadow:0 0 8px rgba(69,230,212,.6);}
   @keyframes sBob{50%{transform:translateY(-1.8vh) rotate(-2deg);}}
-  .showstage .orc{animation-name:sBobOrc;}
-  @keyframes sBobOrc{50%{transform:translateX(-50%) translateY(-1.4vh) rotate(2deg);}}
   @keyframes sStep{0%{transform:translateX(-.6vw) rotate(-5deg);}100%{transform:translateX(.6vw) rotate(5deg);}}
+  @keyframes sHop{0%,100%{transform:translateY(0) scaleY(1);}30%{transform:translateY(-3.5vh) scaleY(1.08);}60%{transform:translateY(0) scaleY(.9);}}
+  @keyframes sSneak{0%,100%{opacity:1;transform:translateX(0);}45%{opacity:.34;transform:translateX(2.4vw);}55%{opacity:.34;transform:translateX(2.4vw);}}
+  @keyframes sBop{0%{transform:translateY(0) rotate(-4deg);}100%{transform:translateY(-1.3vh) rotate(4deg);}}
+  @keyframes sStomp{0%,100%{transform:translateY(0);}20%{transform:translateY(-1vh) rotate(-1deg);}40%{transform:translateY(0);}}
   @keyframes sWave{0%{transform:rotate(-20deg);}100%{transform:rotate(14deg);}}
   @keyframes sChop{0%,55%{transform:rotate(-12deg);}72%{transform:rotate(34deg);}100%{transform:rotate(-12deg);}}
-  @keyframes sPulse{50%{transform:scale(1.3);filter:brightness(1.6);}}
+  @keyframes sPulse{50%{transform:scale(1.28);filter:brightness(1.6);}}
   @keyframes sCast{0%,70%{opacity:0;transform:translate(0,0) scale(.3);}80%{opacity:1;}100%{opacity:0;transform:translate(14px,-34px) scale(1.1);}}
   @keyframes sFlap{0%{transform:rotate(-4deg);}100%{transform:rotate(-44deg);}}
+  @keyframes sTwirl{to{transform:rotate(360deg);}}
+  @keyframes sScratch{0%{transform:rotate(-10deg);}100%{transform:rotate(10deg);}}
   @keyframes sFly{0%{transform:translateX(-18vh) translateY(0) scaleX(1);}
     46%{transform:translateX(94vw) translateY(-4vh) scaleX(1);}54%{transform:translateX(94vw) translateY(-4vh) scaleX(-1);}
     100%{transform:translateX(-18vh) translateY(2vh) scaleX(-1);}}
-  @keyframes sRise{0%{opacity:0;transform:translateY(0) rotate(0);}15%{opacity:1;}100%{opacity:0;transform:translateY(-14vh) rotate(160deg);}}
+  @keyframes sFlyRev{0%{transform:translateX(94vw) scaleX(-1);}46%{transform:translateX(-18vh) translateY(-4vh) scaleX(-1);}
+    54%{transform:translateX(-18vh) translateY(-4vh) scaleX(1);}100%{transform:translateX(94vw) translateY(2vh) scaleX(1);}}
+  @keyframes sRise{0%{opacity:0;transform:translateY(0) rotate(0);}15%{opacity:1;}100%{opacity:0;transform:translateY(-15vh) rotate(160deg);}}
+  @keyframes sFall{0%{opacity:0;transform:translateY(0) rotate(0);}10%{opacity:1;}90%{opacity:1;}100%{opacity:0;transform:translateY(30vh) rotate(220deg);}}
+  @media (prefers-reduced-motion:reduce){.showstage *{animation-duration:6s!important;}}
 
   .screen .pods{display:flex;gap:1.4vw;justify-content:center;align-items:flex-end;z-index:2;padding-top:2.4vh;}
   .pod{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:1.6vh 1.6vw;min-width:11vw;
@@ -902,70 +934,148 @@
     function onMessage(m) { if (m.t === "vm") { gotAnyVM = true; applyVM(m.vm); } }
     if (/dev/.test(location.hash)) window.__applyVM = function (vm) { applyVM(vm); };
 
-    /* ---- little stage show: SVG characters + CSS, no assets ---- */
-    var SVG_MAGE =
-      '<svg class="char mage" viewBox="0 0 120 172">' +
-      '<line x1="95" y1="44" x2="95" y2="164" stroke="#8a5a34" stroke-width="7" stroke-linecap="round"/>' +
-      '<circle class="orb" cx="95" cy="38" r="13" fill="#45e6d4"/>' +
-      '<path class="cast" d="M95 38 l3 -9 3 9 9 3 -9 3 -3 9 -3 -9 -9 -3z" fill="#ffe487"/>' +
-      '<path d="M26 164 Q33 96 60 92 Q87 96 94 164 Z" fill="#5b2ea6"/>' +
-      '<path d="M40 120 l-16 10 M80 120 l14 -8" stroke="#5b2ea6" stroke-width="9" stroke-linecap="round"/>' +
-      '<circle cx="60" cy="74" r="22" fill="#f2d3ba"/>' +
-      '<path d="M44 78 q16 22 32 0 q-4 26 -16 26 q-12 0 -16 -26z" fill="#e9e3f2"/>' +
-      '<path d="M30 68 L60 8 L90 68 Z" fill="#2e1550"/><circle cx="60" cy="9" r="5" fill="#ffcf3f"/>' +
-      '<path d="M30 68 q30 14 60 0" stroke="#ffcf3f" stroke-width="4" fill="none"/>' +
-      '<circle cx="52" cy="74" r="2.6" fill="#1a0b2e"/><circle cx="68" cy="74" r="2.6" fill="#1a0b2e"/>' +
-      '</svg>';
-    var SVG_IDOL =
-      '<svg class="char idol" viewBox="0 0 130 172">' +
-      '<rect x="54" y="128" width="8" height="30" rx="3" fill="#2a2440"/><rect x="70" y="128" width="8" height="30" rx="3" fill="#2a2440"/>' +
-      '<path d="M40 130 Q46 84 65 82 Q84 84 90 130 Z" fill="#ff4da6"/>' +
-      '<path d="M40 130 Q65 118 90 130 L90 138 Q65 126 40 138 Z" fill="#ff7bc0"/>' +
-      '<g class="arm"><line x1="66" y1="96" x2="98" y2="66" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
-      '<circle cx="101" cy="61" r="8" fill="#3a3350"/><rect x="98" y="61" width="4" height="16" fill="#6a6390"/></g>' +
-      '<line x1="60" y1="96" x2="40" y2="120" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
-      '<circle cx="65" cy="62" r="20" fill="#f2d3ba"/>' +
-      '<path d="M45 58 q-14 22 -6 46 q10 -4 12 -18z" fill="#4a2c3f"/>' +
-      '<path d="M85 58 q14 22 6 46 q-10 -4 -12 -18z" fill="#4a2c3f"/>' +
-      '<path d="M44 52 Q65 26 86 52 L86 44 Q65 22 44 44 Z" fill="#4a2c3f"/>' +
-      '<circle cx="58" cy="62" r="2.6" fill="#1a0b2e"/><circle cx="72" cy="62" r="2.6" fill="#1a0b2e"/>' +
-      '<path d="M60 70 q5 5 10 0" stroke="#c23b7a" stroke-width="2.4" fill="none" stroke-linecap="round"/>' +
-      '</svg>';
-    var SVG_ORC =
-      '<svg class="char orc" viewBox="0 0 130 168">' +
-      '<path d="M34 160 Q40 104 65 100 Q90 104 96 160 Z" fill="#3a3a52"/>' +
-      '<g class="axe"><line x1="30" y1="120" x2="14" y2="70" stroke="#7a4a2a" stroke-width="7" stroke-linecap="round"/>' +
-      '<path d="M4 70 q22 -16 26 4 q-16 12 -26 -4z" fill="#c9d1d9"/></g>' +
-      '<line x1="92" y1="112" x2="104" y2="128" stroke="#3f8f4f" stroke-width="10" stroke-linecap="round"/>' +
-      '<circle cx="65" cy="70" r="26" fill="#3f8f4f"/>' +
-      '<path d="M52 84 l-4 12 6 -3z M78 84 l4 12 -6 -3z" fill="#f2f2f2"/>' +
-      '<path d="M40 58 q10 -8 18 0 M72 58 q10 -8 18 0" stroke="#1c3a22" stroke-width="3" fill="none"/>' +
-      '<circle cx="55" cy="66" r="3" fill="#ffcf3f"/><circle cx="77" cy="66" r="3" fill="#ffcf3f"/>' +
-      '<path d="M42 40 q23 -14 46 0" stroke="#2b2b1e" stroke-width="6" fill="none"/>' +
-      '</svg>';
-    var SVG_DRAGON =
-      '<svg class="dragon" viewBox="0 0 150 96">' +
-      '<path d="M40 52 Q8 44 2 62 Q18 58 38 60 Z" fill="#2fd39a"/>' +
-      '<ellipse cx="72" cy="52" rx="34" ry="17" fill="#39f2ac"/>' +
-      '<path class="wing" d="M62 42 Q52 4 26 16 Q42 34 54 50 Z" fill="#8affd8"/>' +
-      '<circle cx="108" cy="42" r="15" fill="#39f2ac"/>' +
-      '<path d="M100 30 l-3 -10 6 6z M114 30 l3 -10 -6 6z" fill="#2fd39a"/>' +
-      '<circle cx="113" cy="40" r="2.6" fill="#06231f"/>' +
-      '<path d="M120 48 q8 2 12 -2" stroke="#06231f" stroke-width="2" fill="none"/>' +
-      '</svg>';
+    /* ---- stage show: SVG cast + CSS, no assets. A different scene per round. ---- */
+    var CHARS = {
+      mage:
+        '<svg class="char c-mage" viewBox="0 0 120 172">' +
+        '<line x1="95" y1="44" x2="95" y2="164" stroke="#8a5a34" stroke-width="7" stroke-linecap="round"/>' +
+        '<circle class="p-orb" cx="95" cy="38" r="13" fill="#45e6d4"/>' +
+        '<path class="p-cast" d="M95 38 l3 -9 3 9 9 3 -9 3 -3 9 -3 -9 -9 -3z" fill="#ffe487"/>' +
+        '<path d="M26 164 Q33 96 60 92 Q87 96 94 164 Z" fill="#5b2ea6"/>' +
+        '<path d="M40 120 l-16 10 M80 120 l14 -8" stroke="#5b2ea6" stroke-width="9" stroke-linecap="round"/>' +
+        '<circle cx="60" cy="74" r="22" fill="#f2d3ba"/>' +
+        '<path d="M44 78 q16 22 32 0 q-4 26 -16 26 q-12 0 -16 -26z" fill="#e9e3f2"/>' +
+        '<path d="M30 68 L60 8 L90 68 Z" fill="#2e1550"/><circle cx="60" cy="9" r="5" fill="#ffcf3f"/>' +
+        '<path d="M30 68 q30 14 60 0" stroke="#ffcf3f" stroke-width="4" fill="none"/>' +
+        '<circle cx="52" cy="74" r="2.6" fill="#1a0b2e"/><circle cx="68" cy="74" r="2.6" fill="#1a0b2e"/></svg>',
+      idol:
+        '<svg class="char c-idol" viewBox="0 0 130 172">' +
+        '<rect x="54" y="128" width="8" height="30" rx="3" fill="#2a2440"/><rect x="70" y="128" width="8" height="30" rx="3" fill="#2a2440"/>' +
+        '<path d="M40 130 Q46 84 65 82 Q84 84 90 130 Z" fill="#ff4da6"/>' +
+        '<path d="M40 130 Q65 118 90 130 L90 138 Q65 126 40 138 Z" fill="#ff7bc0"/>' +
+        '<g class="p-arm"><line x1="66" y1="96" x2="98" y2="66" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
+        '<circle cx="101" cy="61" r="8" fill="#3a3350"/><rect x="98" y="61" width="4" height="16" fill="#6a6390"/></g>' +
+        '<line x1="60" y1="96" x2="40" y2="120" stroke="#f2d3ba" stroke-width="8" stroke-linecap="round"/>' +
+        '<circle cx="65" cy="62" r="20" fill="#f2d3ba"/>' +
+        '<path d="M45 58 q-14 22 -6 46 q10 -4 12 -18z" fill="#4a2c3f"/>' +
+        '<path d="M85 58 q14 22 6 46 q-10 -4 -12 -18z" fill="#4a2c3f"/>' +
+        '<path d="M44 52 Q65 26 86 52 L86 44 Q65 22 44 44 Z" fill="#4a2c3f"/>' +
+        '<circle cx="58" cy="62" r="2.6" fill="#1a0b2e"/><circle cx="72" cy="62" r="2.6" fill="#1a0b2e"/>' +
+        '<path d="M60 70 q5 5 10 0" stroke="#c23b7a" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+      orc:
+        '<svg class="char c-orc" viewBox="0 0 130 168">' +
+        '<path d="M34 160 Q40 104 65 100 Q90 104 96 160 Z" fill="#3a3a52"/>' +
+        '<g class="p-axe"><line x1="30" y1="120" x2="14" y2="70" stroke="#7a4a2a" stroke-width="7" stroke-linecap="round"/>' +
+        '<path d="M4 70 q22 -16 26 4 q-16 12 -26 -4z" fill="#c9d1d9"/></g>' +
+        '<line x1="92" y1="112" x2="104" y2="128" stroke="#3f8f4f" stroke-width="10" stroke-linecap="round"/>' +
+        '<circle cx="65" cy="70" r="26" fill="#3f8f4f"/>' +
+        '<path d="M52 84 l-4 12 6 -3z M78 84 l4 12 -6 -3z" fill="#f2f2f2"/>' +
+        '<path d="M40 58 q10 -8 18 0 M72 58 q10 -8 18 0" stroke="#1c3a22" stroke-width="3" fill="none"/>' +
+        '<circle cx="55" cy="66" r="3" fill="#ffcf3f"/><circle cx="77" cy="66" r="3" fill="#ffcf3f"/>' +
+        '<path d="M42 40 q23 -14 46 0" stroke="#2b2b1e" stroke-width="6" fill="none"/></svg>',
+      murloc:
+        '<svg class="char c-murloc" viewBox="0 0 110 150">' +
+        '<path d="M55 150 l-12 -18 24 0z" fill="#1f7a6b"/>' +
+        '<ellipse cx="55" cy="104" rx="30" ry="26" fill="#2fb8a0"/>' +
+        '<path d="M25 66 Q55 6 85 66 Q70 54 55 54 Q40 54 25 66z" fill="#37d0b4"/>' +
+        '<circle cx="55" cy="96" r="24" fill="#2fb8a0"/>' +
+        '<circle cx="44" cy="92" r="10" fill="#fff"/><circle cx="66" cy="92" r="10" fill="#fff"/>' +
+        '<circle cx="45" cy="93" r="4" fill="#111"/><circle cx="65" cy="93" r="4" fill="#111"/>' +
+        '<path d="M42 112 q13 12 26 0" stroke="#0f5248" stroke-width="3" fill="none"/>' +
+        '<path d="M30 120 l-16 8 M80 120 l16 8" stroke="#2fb8a0" stroke-width="8" stroke-linecap="round"/></svg>',
+      rogue:
+        '<svg class="char c-rogue" viewBox="0 0 120 168">' +
+        '<path d="M32 162 Q34 92 60 84 Q86 92 88 162 Z" fill="#20222e"/>' +
+        '<path d="M60 40 Q34 44 34 82 L86 82 Q86 44 60 40z" fill="#2b2e3d"/>' +
+        '<path d="M46 66 h28 v10 q-14 8 -28 0z" fill="#0e0f16"/>' +
+        '<circle cx="53" cy="70" r="2.6" fill="#45e6d4"/><circle cx="67" cy="70" r="2.6" fill="#45e6d4"/>' +
+        '<g class="p-dagger" style="transform-box:fill-box"><path d="M92 108 l6 -20 6 20 -6 6z" fill="#cfd6e4"/>' +
+        '<rect x="95" y="108" width="6" height="12" fill="#5a3b25"/></g>' +
+        '<path d="M30 120 l-12 -6" stroke="#2b2e3d" stroke-width="8" stroke-linecap="round"/></svg>',
+      priest:
+        '<svg class="char c-priest" viewBox="0 0 120 172">' +
+        '<path d="M28 164 Q34 92 60 88 Q86 92 92 164 Z" fill="#eef0f6"/>' +
+        '<path d="M28 164 Q60 150 92 164 L92 154 Q60 142 28 154z" fill="#ffcf3f"/>' +
+        '<circle cx="60" cy="70" r="22" fill="#f2d3ba"/>' +
+        '<ellipse class="p-halo" cx="60" cy="40" rx="22" ry="7" fill="none" stroke="#ffe487" stroke-width="4"/>' +
+        '<path d="M44 96 q16 14 32 0" stroke="#f2d3ba" stroke-width="9" fill="none" stroke-linecap="round"/>' +
+        '<circle class="p-holy" cx="60" cy="104" r="12" fill="#ffe487"/>' +
+        '<circle cx="53" cy="70" r="2.6" fill="#1a0b2e"/><circle cx="67" cy="70" r="2.6" fill="#1a0b2e"/></svg>',
+      fan:
+        '<svg class="char c-fan" viewBox="0 0 110 160">' +
+        '<path d="M34 154 Q38 104 55 100 Q72 104 76 154 Z" fill="#6a4bd0"/>' +
+        '<circle cx="55" cy="76" r="19" fill="#f2d3ba"/>' +
+        '<path d="M38 72 Q55 44 72 72 L72 62 Q55 40 38 62z" fill="#3a2b52"/>' +
+        '<circle cx="49" cy="76" r="2.4" fill="#1a0b2e"/><circle cx="61" cy="76" r="2.4" fill="#1a0b2e"/>' +
+        '<g class="p-stick"><line x1="55" y1="98" x2="82" y2="42" stroke="#f2d3ba" stroke-width="7" stroke-linecap="round"/>' +
+        '<rect x="78" y="26" width="8" height="20" rx="4" fill="#45e6d4"/><circle cx="82" cy="24" r="7" fill="#8affd8"/></g></svg>',
+      tauren:
+        '<svg class="char c-tauren" viewBox="0 0 150 176">' +
+        '<path d="M34 170 Q34 96 75 88 Q116 96 116 170 Z" fill="#7a4a30"/>' +
+        '<circle cx="75" cy="66" r="30" fill="#8a5638"/>' +
+        '<path d="M45 54 Q20 40 16 60 Q34 58 46 66z M105 54 Q130 40 134 60 Q116 58 104 66z" fill="#e8e0d0"/>' +
+        '<ellipse cx="75" cy="80" rx="16" ry="12" fill="#5f3a24"/>' +
+        '<circle cx="64" cy="60" r="3" fill="#1a0b2e"/><circle cx="86" cy="60" r="3" fill="#1a0b2e"/>' +
+        '<path d="M30 120 l-14 10 M120 120 l14 10" stroke="#7a4a30" stroke-width="12" stroke-linecap="round"/></svg>',
+      dj:
+        '<svg class="char c-dj" viewBox="0 0 150 150">' +
+        '<rect x="18" y="104" width="114" height="34" rx="6" fill="#20222e"/>' +
+        '<circle class="p-deck" cx="46" cy="120" r="13" fill="#3a3f52" style="transform-box:fill-box;transform-origin:center"/>' +
+        '<circle cx="46" cy="120" r="4" fill="#ffcf3f"/>' +
+        '<circle class="p-deck" cx="104" cy="120" r="13" fill="#3a3f52" style="transform-box:fill-box;transform-origin:center"/>' +
+        '<circle cx="104" cy="120" r="4" fill="#45e6d4"/>' +
+        '<circle cx="75" cy="70" r="20" fill="#f2d3ba"/>' +
+        '<path d="M52 70 a23 23 0 0 1 46 0" fill="none" stroke="#1a0b2e" stroke-width="6"/>' +
+        '<rect x="49" y="66" width="8" height="14" rx="3" fill="#1a0b2e"/><rect x="93" y="66" width="8" height="14" rx="3" fill="#1a0b2e"/>' +
+        '<circle cx="68" cy="70" r="2.4" fill="#1a0b2e"/><circle cx="82" cy="70" r="2.4" fill="#1a0b2e"/></svg>',
+      dragon:
+        '<svg viewBox="0 0 150 96" style="width:100%;height:auto;display:block">' +
+        '<path d="M40 52 Q8 44 2 62 Q18 58 38 60 Z" fill="#2fd39a"/>' +
+        '<ellipse cx="72" cy="52" rx="34" ry="17" fill="#39f2ac"/>' +
+        '<path class="p-wing" d="M62 42 Q52 4 26 16 Q42 34 54 50 Z" fill="#8affd8"/>' +
+        '<circle cx="108" cy="42" r="15" fill="#39f2ac"/>' +
+        '<path d="M100 30 l-3 -10 6 6z M114 30 l3 -10 -6 6z" fill="#2fd39a"/>' +
+        '<circle cx="113" cy="40" r="2.6" fill="#06231f"/>' +
+        '<path d="M120 48 q8 2 12 -2" stroke="#06231f" stroke-width="2" fill="none"/></svg>'
+    };
+    var SCENES = [
+      { cast: ["mage", "rogue", "priest"], fly: false, fx: "rune" },
+      { cast: ["idol", "fan"],             fly: false, fx: "heart" },
+      { cast: ["orc", "tauren"],           fly: true,  fx: "spark" },
+      { cast: ["mage", "idol"],            fly: false, fx: "note" },
+      { cast: ["priest", "murloc", "rogue"], fly: false, fx: "snow" },
+      { cast: ["idol", "fan", "dj"],       fly: false, fx: "note" },
+      { cast: ["orc", "priest"],           fly: false, fx: "leaf" },
+      { cast: ["mage", "murloc"],          fly: true,  fx: "rune" },
+      { cast: ["dj", "rogue"],             fly: false, fx: "note" },
+      { cast: ["tauren", "fan"],           fly: false, fx: "spark" },
+      { cast: ["mage", "priest", "idol"],  fly: true,  fx: "heart" },
+      { cast: ["rogue", "murloc", "fan"],  fly: false, fx: "bub" }
+    ];
+    var FX_GLYPH = { spark: "", note: "♪", heart: "♥", leaf: "❧", snow: "❄", rune: "✦", bub: "" };
+    var LAYOUT = { 2: ["26%", "74%"], 3: ["15%", "50%", "85%"], 4: ["12%", "38%", "62%", "88%"] };
 
-    function showStage() {
-      var s = el("div", { class: "showstage" });
-      var html = '<div class="floor"></div>'
-        + '<div class="spot" style="left:12%"></div><div class="spot" style="left:42%"></div><div class="spot" style="left:88%"></div>'
-        + SVG_MAGE + SVG_ORC + SVG_IDOL + SVG_DRAGON;
-      var deco = [
-        ['note', '8%', '♪', 0], ['note', '88%', '♫', 1.6], ['note', '82%', '♪', 3.1], ['note', '4%', '♫', 2.2],
-        ['spark', '16%', '', 0.8], ['spark', '10%', '', 2.4], ['spark', '92%', '', 1.2], ['spark', '40%', '', 1.8]
-      ];
-      deco.forEach(function (d) {
-        html += '<span class="' + d[0] + '" style="left:' + d[1] + ';bottom:4vh;animation-delay:' + d[3] + 's">' + d[2] + '</span>';
+    function showStage(vm) {
+      var r = (vm && typeof vm.round === "number") ? vm.round : 0;
+      var sc = SCENES[(r * 5) % SCENES.length];
+      var pos = LAYOUT[sc.cast.length] || ["20%", "50%", "80%"];
+      var html = '<div class="floor"></div>';
+      sc.cast.forEach(function (name, i) {
+        html += '<div class="spot" style="left:' + pos[i] + '"></div>';
+        html += '<div class="slotwrap" style="left:' + pos[i] + '">' + CHARS[name] + '</div>';
       });
+      if (sc.fly) html += '<div class="flyer' + (r % 2 ? " rev" : "") + '">' + CHARS.dragon + '</div>';
+      var glyph = FX_GLYPH[sc.fx];
+      var mode = (sc.fx === "snow" || sc.fx === "leaf") ? "fall" : "rise";
+      for (var k = 0; k < 9; k++) {
+        var left = (5 + Math.random() * 90).toFixed(1) + "%";
+        var delay = (Math.random() * 4.5).toFixed(2);
+        var g = glyph;
+        if (sc.fx === "note") g = ["♪", "♫", "♬"][k % 3];
+        var extra = mode === "rise" ? ";bottom:" + (2 + Math.random() * 7).toFixed(1) + "vh" : "";
+        html += '<span class="fx ' + mode + " e-" + sc.fx + '" style="left:' + left + ";animation-delay:" + delay + "s" + extra + '">' + g + "</span>";
+      }
+      var s = el("div", { class: "showstage" });
       s.innerHTML = html;
       return s;
     }
@@ -1051,7 +1161,7 @@
             el("div", { class: "roundword fade", style: "font-size:1.9vw;color:var(--cyan)", text: who }),
             el("div", { class: "roundword fade", style: "margin-top:.6vh;font-size:1.4vw", text: n + " / 4 locked in" })
           ]),
-          el("div", { style: "flex:1;position:relative;width:100%;display:flex;align-items:flex-end;justify-content:center;z-index:2;" }, [showStage()]),
+          el("div", { style: "flex:1;position:relative;width:100%;display:flex;align-items:flex-end;justify-content:center;z-index:2;" }, [showStage(vm)]),
           pods(vm, { active: vm.active, locked: vm.locked })
         ]);
         return;
