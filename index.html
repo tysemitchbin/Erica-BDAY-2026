@@ -708,7 +708,7 @@
         var ta = el("textarea", { class: "answer", maxlength: String(MAXLEN), placeholder: "Type your answer…", autocapitalize: "sentences" });
         var count = el("div", { class: "charcount", text: "0 / " + MAXLEN });
         var btn = el("button", { class: "btn", disabled: "disabled", onclick: function () {
-          S.data.answers[pi] = { by: pi, text: ta.value.trim() };
+          S.data.answers[pi] = { by: pi, text: ta.value.trim().slice(0, MAXLEN) };
           S.typeStep++; saveState(); sendVM(); go("type");
         }}, ["Lock in answer"]);
         ta.addEventListener("input", function () {
